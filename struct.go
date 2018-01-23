@@ -18,8 +18,6 @@ type CLICommandArg struct {
 type CLICommandFunc func(*CLICommandData) (err error)
 
 type CLICommandData struct {
-    cmd *CLICommand
-    f CLICommandFunc
     options map[string]string
     params []string
 }
