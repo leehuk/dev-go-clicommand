@@ -10,6 +10,10 @@ func (cmd *CLICommand) Help() {
     fmt.Printf("  %s\n", cmd.desc)
     fmt.Printf("\n")
 
+    if cmd.parent != nil {
+        cmd.parent.HelpOptionsRecurseRev()
+    }
+
     if len(cmd.children) > 0 {
         fmt.Printf("  Available subcommands:\n")
         for _, v := range cmd.children {
@@ -27,7 +31,19 @@ func (cmd *CLICommand) Help() {
     }
 }
 
+func (cmd *CLICommand) HelpOptionsRecurseRev() {
+    if cmd.parent != nil {
+        cmd.parent.HelpOptionsRecurseRev()
+    }
+
+    cmd.HelpOptions()
+}
+
 func (cmd *CLICommand) HelpOptions() {
+    if len(cmd.args) == 0 {
+        return
+    }
+
     fmt.Printf("  %s options:\n", cmd.GetMenuNameChain())
     for _, arg := range cmd.args {
         var prefix string
@@ -42,8 +58,4 @@ func (cmd *CLICommand) HelpOptions() {
     }
 
     fmt.Printf("\n")
-
-    if cmd.parent != nil {
-        cmd.parent.HelpOptions()
-    }
 }
