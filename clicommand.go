@@ -88,7 +88,7 @@ func (cmd *CLICommand) GetArg(name string, param bool) *CLICommandArg {
 
 func (cmd *CLICommand) Parse() error {
     var command_ptr = cmd
-    var command_inst = &CLICommandData{
+    var command_data = &CLICommandData{
         options: make(map[string]string),
     }
 
@@ -133,7 +133,7 @@ func (cmd *CLICommand) Parse() error {
             }
 
             if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
-                command_inst.options[argname] = argval
+                command_data.options[argname] = argval
             } else {
                 return errors.New(fmt.Sprintf("Unknown option: %s", arg))
             }
@@ -155,15 +155,15 @@ func (cmd *CLICommand) Parse() error {
             return nil
         // some other parameter
         } else {
-            command_inst.params = os.Args[i:]
+            command_data.params = os.Args[i:]
             break
         }
     }
 
-    command_inst.cmd = command_ptr
-    command_inst.f = command_ptr.f
+    command_data.cmd = command_ptr
+    command_data.f = command_ptr.f
 
-    fmt.Printf("%v\n", command_inst)
+    fmt.Printf("%v\n", command_data)
 
     return nil
 }
