@@ -92,8 +92,9 @@ func (cmd *CLICommand) Parse() error {
         options: make(map[string]string),
     }
 
+    // no parameters given, display overall help
     if len(os.Args) <= 1 {
-        command_ptr.Help()
+        command_ptr.Help(nil)
         return nil
     }
 
@@ -140,8 +141,19 @@ func (cmd *CLICommand) Parse() error {
         } else if subcmd := command_ptr.GetMenu(arg); subcmd != nil {
             // repoint our pointer to this sub-menu and continue parsing
             command_ptr = subcmd
+        // help command as sub-menu.  This calls directly out to Help() on the current
+        // sub-command object, then returns.
         } else if strings.EqualFold(arg, "help") {
-            command_ptr.Help()
+            // take any remaining fields as parameters
+            if len(os.Args) >= i {
+                i++
+                command_ptr.Help(os.Args[i:])
+            } else {
+                command_ptr.Help(nil)
+            }
+
+            return nil
+        // some other parameter
         } else {
             command_inst.params = os.Args[i:]
             break
