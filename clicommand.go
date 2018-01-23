@@ -4,6 +4,7 @@ import(
     "errors"
     "fmt"
     "os"
+    "strings"
 )
 
 func New(name string, desc string) *CLICommand {
@@ -32,6 +33,17 @@ func (cmd *CLICommand) AddMenu(name string, desc string, f CLICommandFunc) *CLIC
     return subcmd
 }
 
+func (cmd *CLICommand) GetMenu(name string) *CLICommand {
+    for _, v := range cmd.children {
+        if strings.EqualFold(v.name, name) {
+            return v
+        }
+    }
+
+    return nil
+}
+
+
 func (cmd *CLICommand) AddArg(name string, desc string, param bool) {
     arg := &CLICommandArg{
         name,
@@ -41,35 +53,76 @@ func (cmd *CLICommand) AddArg(name string, desc string, param bool) {
     cmd.args = append(cmd.args, arg)
 }
 
-func (cmd *CLICommand) Parse() error {
-    var command_params = make(map[string]string)
-
-    for i := 1; i < len(os.Args); i++ {
-        param := os.Args[i]
-
-        // double dash options have parameters
-        if len(param) >= 3 && param[:2] == "--" {
-            if i + 1 >= len(os.Args) {
-                return errors.New(fmt.Sprintf("Missing parameter value for option: %s", param))
-            }
-
-            pkey := param[2:]
-            pvalue := os.Args[i+1]
-
-            command_params[pkey] = pvalue
-
-            // skip next parameter
-            i++
-        // single dash parameter, no value
-        } else if len(param) >= 2 && param[:1] == "-" {
-            pkey := param[1:]
-            command_params[pkey] = ""
-        } else {
+func (cmd *CLICommand) GetArg(name string, param bool) *CLICommandArg {
+    for _, v := range cmd.args {
+        if strings.EqualFold(v.name, name) && v.param == param {
+            return v
         }
-
     }
 
-    fmt.Printf("FINAL: %v\n%v\n", command_params)
+    // not found, may be a parameter to a parent menu
+    if cmd.parent != nil {
+        return cmd.parent.GetArg(name, param)
+    } else {
+        return nil
+    }
+}
+
+func (cmd *CLICommand) Parse() error {
+    var command_params = make(map[string]string)
+    var command_ptr = cmd
+
+    for i := 1; i < len(os.Args); i++ {
+        arg := os.Args[i]
+
+        // option argument
+        if len(arg) >= 1 && arg[:1] == "-" {
+            var argname string
+            var argval string
+            var argparam bool
+
+            // ensure we do not have an option with no name
+            if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
+                return errors.New(fmt.Sprintf("Invalid option: %s", arg))
+            }
+
+            // option with parameter "--xyz"
+            if arg[:2] == "--" {
+                // ensure we have a parameter
+                if i+1 >= len(os.Args) {
+                    return errors.New(fmt.Sprintf("Missing parameter to option: %s", arg))
+                }
+
+                argname = arg[2:]
+                argval = os.Args[i+1]
+                argparam = true
+
+                // next arg was an option to this param, skip its parsing
+                i++
+            // option without parameter "-xyz"
+            } else {
+                argname = arg[1:]
+                argval = ""
+                argparam = false
+            }
+
+            if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
+                command_params[argname] = argval
+            } else {
+                return errors.New(fmt.Sprintf("Unknown option: %s", arg))
+            }
+        // sub-menu
+        } else if subcmd := command_ptr.GetMenu(arg); subcmd != nil {
+            command_ptr = subcmd
+        } else if strings.EqualFold(arg, "help") {
+            command_ptr.Help()
+        } else {
+        }
+    }
+
+    if command_ptr == cmd {
+        command_ptr.Help()
+    }
 
     return nil
 }
