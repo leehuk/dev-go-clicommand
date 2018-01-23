@@ -19,8 +19,10 @@ func (cmd *CLICommand) Help() {
 
         cmd.HelpOptions()
 
-        fmt.Printf("  For a command overview run 'gh help', 'gh <command> help',\n")
-        fmt.Printf("  'gh <command> <subcommand> help', etc\n")
+        fmt.Printf("  For help information run:\n")
+        fmt.Printf("    '%s help'\n", cmd.GetMenuNameTop())
+        fmt.Printf("    '%s <commands>* help'\n", cmd.GetMenuNameTop())
+        fmt.Printf("    '%s [commands]* help [subcommand]*'\n", cmd.GetMenuNameTop())
         fmt.Printf("\n")
     }
 }

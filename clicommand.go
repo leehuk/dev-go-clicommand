@@ -43,6 +43,24 @@ func (cmd *CLICommand) GetMenu(name string) *CLICommand {
     return nil
 }
 
+func (cmd *CLICommand) GetMenuNameChain() string {
+    name := cmd.name
+    if cmd.parent != nil {
+        parentname := cmd.parent.GetMenuNameChain()
+        if parentname != "" {
+            name = parentname + " " + name
+        }
+    }
+    return name
+}
+
+func (cmd *CLICommand) GetMenuNameTop() string {
+    if cmd.parent != nil {
+        return cmd.parent.GetMenuNameTop()
+    } else {
+        return cmd.name
+    }
+}
 
 func (cmd *CLICommand) AddArg(name string, desc string, param bool) {
     arg := &CLICommandArg{
@@ -71,6 +89,11 @@ func (cmd *CLICommand) GetArg(name string, param bool) *CLICommandArg {
 func (cmd *CLICommand) Parse() error {
     var command_params = make(map[string]string)
     var command_ptr = cmd
+
+    if len(os.Args) <= 1 {
+        command_ptr.Help()
+        return nil
+    }
 
     for i := 1; i < len(os.Args); i++ {
         arg := os.Args[i]
@@ -120,22 +143,6 @@ func (cmd *CLICommand) Parse() error {
         }
     }
 
-    if command_ptr == cmd {
-        command_ptr.Help()
-    }
-
     return nil
 }
-
-func (cmd *CLICommand) GetMenuNameChain() string {
-    name := cmd.name
-    if cmd.parent != nil {
-        parentname := cmd.parent.GetMenuNameChain()
-        if parentname != "" {
-            name = parentname + " " + name
-        }
-    }
-    return name
-}
-
 
