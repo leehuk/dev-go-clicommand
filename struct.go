@@ -1,18 +1,18 @@
 package clicommand
 
-type Command struct {
+type CLICommandMenu struct {
     name string
     desc string
-    f CommandFunc
-    parent *Command
-    children []*Command
-    args []*CommandArg
+    f CLICommandFunc
+    parent *CLICommandMenu
+    children []*CLICommandMenu
+    args []*CLICommandArg
 }
 
-type CommandArg struct {
+type CLICommandArg struct {
     name string
     desc string
     param bool
 }
 
-type CommandFunc func([]string, map[string]string) (err error)
+type CLICommandFunc func([]string, map[string]string) (err error)

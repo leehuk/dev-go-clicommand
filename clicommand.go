@@ -6,8 +6,8 @@ import(
     "os"
 )
 
-func New(name string, desc string, parent *Command, f CommandFunc) *Command {
-    cmd := Command{
+func New(name string, desc string, parent *CLICommandMenu, f CLICommandFunc) *CLICommandMenu {
+    cmd := CLICommandMenu{
         name,
         desc,
         f,
@@ -23,8 +23,8 @@ func New(name string, desc string, parent *Command, f CommandFunc) *Command {
     return &cmd
 }
 
-func NewArg(cmd *Command, name string, param bool, desc string) {
-    arg := CommandArg{
+func NewArg(cmd *CLICommandMenu, name string, param bool, desc string) {
+    arg := CLICommandArg{
         name,
         desc,
         param,
@@ -32,7 +32,7 @@ func NewArg(cmd *Command, name string, param bool, desc string) {
     cmd.args = append(cmd.args, &arg)
 }
 
-func Parse(cmd *Command) error {
+func Parse(cmd *CLICommandMenu) error {
     var command_chain []string
     var command_params = make(map[string]string)
 
@@ -69,7 +69,7 @@ func Parse(cmd *Command) error {
     return nil
 }
 
-func GetParentName(cmd *Command) string {
+func GetParentName(cmd *CLICommandMenu) string {
     name := cmd.name
     if cmd.parent != nil {
         parentname := GetParentName(cmd.parent)

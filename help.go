@@ -4,7 +4,7 @@ import(
     "fmt"
 )
 
-func Help(cmd *Command) {
+func Help(cmd *CLICommandMenu) {
     fmt.Printf("\n")
     fmt.Printf("  %s\n", GetParentName(cmd))
     fmt.Printf("  %s\n", cmd.desc)
@@ -25,7 +25,7 @@ func Help(cmd *Command) {
     }
 }
 
-func HelpOptions(cmd *Command) {
+func HelpOptions(cmd *CLICommandMenu) {
     fmt.Printf("  %s options:\n", GetParentName(cmd))
     for _, arg := range cmd.args {
         var prefix string
