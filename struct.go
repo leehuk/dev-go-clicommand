@@ -1,11 +1,11 @@
 package clicommand
 
-type CLICommandMenu struct {
+type CLICommand struct {
     name string
     desc string
     f CLICommandFunc
-    parent *CLICommandMenu
-    children []*CLICommandMenu
+    parent *CLICommand
+    children []*CLICommand
     args []*CLICommandArg
 }
 

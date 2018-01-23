@@ -4,9 +4,9 @@ import(
     "fmt"
 )
 
-func Help(cmd *CLICommandMenu) {
+func (cmd *CLICommand) Help() {
     fmt.Printf("\n")
-    fmt.Printf("  %s\n", GetParentName(cmd))
+    fmt.Printf("  %s\n", cmd.GetMenuNameChain())
     fmt.Printf("  %s\n", cmd.desc)
     fmt.Printf("\n")
 
@@ -17,7 +17,7 @@ func Help(cmd *CLICommandMenu) {
         }
         fmt.Printf("\n")
 
-        HelpOptions(cmd)
+        cmd.HelpOptions()
 
         fmt.Printf("  For a command overview run 'gh help', 'gh <command> help',\n")
         fmt.Printf("  'gh <command> <subcommand> help', etc\n")
@@ -25,8 +25,8 @@ func Help(cmd *CLICommandMenu) {
     }
 }
 
-func HelpOptions(cmd *CLICommandMenu) {
-    fmt.Printf("  %s options:\n", GetParentName(cmd))
+func (cmd *CLICommand) HelpOptions() {
+    fmt.Printf("  %s options:\n", cmd.GetMenuNameChain())
     for _, arg := range cmd.args {
         var prefix string
 
@@ -42,6 +42,6 @@ func HelpOptions(cmd *CLICommandMenu) {
     fmt.Printf("\n")
 
     if cmd.parent != nil {
-        HelpOptions(cmd.parent)
+        cmd.parent.HelpOptions()
     }
 }

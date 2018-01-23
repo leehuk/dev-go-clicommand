@@ -6,34 +6,42 @@ import(
     "os"
 )
 
-func New(name string, desc string, parent *CLICommandMenu, f CLICommandFunc) *CLICommandMenu {
-    cmd := CLICommandMenu{
+func New(name string, desc string) *CLICommand {
+    cmd := &CLICommand{
         name,
         desc,
-        f,
-        parent,
+        nil,
+        nil,
         nil,
         nil,
     }
 
-    if parent != nil {
-        parent.children = append(parent.children, &cmd)
-    }
-
-    return &cmd
+    return cmd
 }
 
-func NewArg(cmd *CLICommandMenu, name string, param bool, desc string) {
-    arg := CLICommandArg{
+func (cmd *CLICommand) AddMenu(name string, desc string, f CLICommandFunc) *CLICommand {
+    subcmd := New(name, desc)
+    subcmd.parent = cmd
+
+    if f != nil {
+        subcmd.f = f
+    }
+
+    cmd.children = append(cmd.children, subcmd)
+
+    return subcmd
+}
+
+func (cmd *CLICommand) AddArg(name string, desc string, param bool) {
+    arg := &CLICommandArg{
         name,
         desc,
         param,
     }
-    cmd.args = append(cmd.args, &arg)
+    cmd.args = append(cmd.args, arg)
 }
 
-func Parse(cmd *CLICommandMenu) error {
-    var command_chain []string
+func (cmd *CLICommand) Parse() error {
     var command_params = make(map[string]string)
 
     for i := 1; i < len(os.Args); i++ {
@@ -57,22 +65,19 @@ func Parse(cmd *CLICommandMenu) error {
             pkey := param[1:]
             command_params[pkey] = ""
         } else {
-            command_chain = append(command_chain, param)
         }
+
     }
 
-    if len(command_chain) == 0 || command_chain[0] == "help" {
-        Help(cmd)
-    }
-    fmt.Printf("FINAL: %v\n%v\n", command_chain, command_params)
+    fmt.Printf("FINAL: %v\n%v\n", command_params)
 
     return nil
 }
 
-func GetParentName(cmd *CLICommandMenu) string {
+func (cmd *CLICommand) GetMenuNameChain() string {
     name := cmd.name
     if cmd.parent != nil {
-        parentname := GetParentName(cmd.parent)
+        parentname := cmd.parent.GetMenuNameChain()
         if parentname != "" {
             name = parentname + " " + name
         }
