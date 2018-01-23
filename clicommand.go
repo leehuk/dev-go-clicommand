@@ -109,7 +109,7 @@ func (cmd *CLICommand) Parse() error {
                 return errors.New(fmt.Sprintf("Invalid option: %s", arg))
             }
 
-            // option with parameter "--xyz"
+            // option with parameter: "--xyz"
             if arg[:2] == "--" {
                 // ensure we have a parameter
                 if i+1 >= len(os.Args) {
@@ -122,7 +122,7 @@ func (cmd *CLICommand) Parse() error {
 
                 // next arg was an option to this param, skip its parsing
                 i++
-            // option without parameter "-xyz"
+                // option without parameter: "-xyz"
             } else {
                 argname = arg[1:]
                 argval = ""
