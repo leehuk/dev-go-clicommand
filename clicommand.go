@@ -87,8 +87,10 @@ func (cmd *CLICommand) GetArg(name string, param bool) *CLICommandArg {
 }
 
 func (cmd *CLICommand) Parse() error {
-    var command_options = make(map[string]string)
     var command_ptr = cmd
+    var command_inst = &CLICommandData{
+        options: make(map[string]string),
+    }
 
     if len(os.Args) <= 1 {
         command_ptr.Help()
@@ -130,18 +132,26 @@ func (cmd *CLICommand) Parse() error {
             }
 
             if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
-                command_options[argname] = argval
+                command_inst.options[argname] = argval
             } else {
                 return errors.New(fmt.Sprintf("Unknown option: %s", arg))
             }
         // sub-menu
         } else if subcmd := command_ptr.GetMenu(arg); subcmd != nil {
+            // repoint our pointer to this sub-menu and continue parsing
             command_ptr = subcmd
         } else if strings.EqualFold(arg, "help") {
             command_ptr.Help()
         } else {
+            command_inst.params = os.Args[i:]
+            break
         }
     }
+
+    command_inst.cmd = command_ptr
+    command_inst.f = command_ptr.f
+
+    fmt.Printf("%v\n", command_inst)
 
     return nil
 }

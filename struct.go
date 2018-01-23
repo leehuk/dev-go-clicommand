@@ -15,4 +15,12 @@ type CLICommandArg struct {
     param bool
 }
 
-type CLICommandFunc func([]string, map[string]string) (err error)
+type CLICommandFunc func(*CLICommandData) (err error)
+
+type CLICommandData struct {
+    cmd *CLICommand
+    f CLICommandFunc
+    options map[string]string
+    params []string
+}
+
