@@ -160,15 +160,11 @@ func (cmd *CLICommand) Parse() error {
         }
     }
 
-    if command_ptr.f != nil {
-        command_ptr.f(command_data)
-    } else {
+    if command_ptr.f == nil {
         command_ptr.Help(command_data.params)
         return errors.New(fmt.Sprintf("No command specified"))
     }
 
-    fmt.Printf("%v\n", command_data)
-
-    return nil
+    return command_ptr.f(command_data)
 }
 
