@@ -4,9 +4,9 @@ import(
     "fmt"
 )
 
-func (cmd *CLICommand) Help(data *CLICommandData) {
+func (cmd *Command) Help(data *Data) {
     fmt.Printf("\n")
-    fmt.Printf("  %s\n", cmd.GetMenuNameChain())
+    fmt.Printf("  %s\n", cmd.GetCommandNameChain())
     fmt.Printf("  %s\n", cmd.desc)
     fmt.Printf("\n")
 
@@ -24,14 +24,14 @@ func (cmd *CLICommand) Help(data *CLICommandData) {
         cmd.HelpOptions()
 
         fmt.Printf("  For help information run:\n")
-        fmt.Printf("    '%s help'\n", cmd.GetMenuNameTop())
-        fmt.Printf("    '%s <commands>* help'\n", cmd.GetMenuNameTop())
-        fmt.Printf("    '%s [commands]* help [subcommand]*'\n", cmd.GetMenuNameTop())
+        fmt.Printf("    '%s help'\n", cmd.GetCommandNameTop())
+        fmt.Printf("    '%s <commands>* help'\n", cmd.GetCommandNameTop())
+        fmt.Printf("    '%s [commands]* help [subcommand]*'\n", cmd.GetCommandNameTop())
         fmt.Printf("\n")
     }
 }
 
-func (cmd *CLICommand) HelpOptionsRecurseRev() {
+func (cmd *Command) HelpOptionsRecurseRev() {
     if cmd.parent != nil {
         cmd.parent.HelpOptionsRecurseRev()
     }
@@ -39,12 +39,12 @@ func (cmd *CLICommand) HelpOptionsRecurseRev() {
     cmd.HelpOptions()
 }
 
-func (cmd *CLICommand) HelpOptions() {
+func (cmd *Command) HelpOptions() {
     if len(cmd.args) == 0 {
         return
     }
 
-    fmt.Printf("  %s options:\n", cmd.GetMenuNameChain())
+    fmt.Printf("  %s options:\n", cmd.GetCommandNameChain())
     for _, arg := range cmd.args {
         var prefix string
 

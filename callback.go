@@ -1,13 +1,13 @@
 package clicommand
 
-func (cmd *CLICommand) AddCallback(f CLICommandFunc) {
-    cmd.callbacks = append(cmd.callbacks, f)
+func (cmd *Command) AddCallback(handler Handler) {
+    cmd.callbacks = append(cmd.callbacks, handler)
 }
 
-func (cmd *CLICommand) RunCallbacks(data *CLICommandData) error {
+func (cmd *Command) RunCallbacks(data *Data) error {
     if len(cmd.callbacks) > 0 {
-        for _, f := range cmd.callbacks {
-            if error := f(data); error != nil {
+        for _, handler := range cmd.callbacks {
+            if error := handler(data); error != nil {
                 return error
             }
         }

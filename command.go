@@ -4,12 +4,12 @@ import(
     "strings"
 )
 
-func (cmd *CLICommand) AddMenu(name string, desc string, f CLICommandFunc) *CLICommand {
+func (cmd *Command) AddCommand(name string, desc string, handler Handler) *Command {
     subcmd := New(name, desc)
     subcmd.parent = cmd
 
-    if f != nil {
-        subcmd.f = f
+    if handler != nil {
+        subcmd.handler = handler
     }
 
     cmd.children = append(cmd.children, subcmd)
@@ -17,7 +17,7 @@ func (cmd *CLICommand) AddMenu(name string, desc string, f CLICommandFunc) *CLIC
     return subcmd
 }
 
-func (cmd *CLICommand) GetMenu(name string) *CLICommand {
+func (cmd *Command) GetCommand(name string) *Command {
     for _, v := range cmd.children {
         if strings.EqualFold(v.name, name) {
             return v
@@ -27,10 +27,10 @@ func (cmd *CLICommand) GetMenu(name string) *CLICommand {
     return nil
 }
 
-func (cmd *CLICommand) GetMenuNameChain() string {
+func (cmd *Command) GetCommandNameChain() string {
     name := cmd.name
     if cmd.parent != nil {
-        parentname := cmd.parent.GetMenuNameChain()
+        parentname := cmd.parent.GetCommandNameChain()
         if parentname != "" {
             name = parentname + " " + name
         }
@@ -38,9 +38,9 @@ func (cmd *CLICommand) GetMenuNameChain() string {
     return name
 }
 
-func (cmd *CLICommand) GetMenuNameTop() string {
+func (cmd *Command) GetCommandNameTop() string {
     if cmd.parent != nil {
-        return cmd.parent.GetMenuNameTop()
+        return cmd.parent.GetCommandNameTop()
     } else {
         return cmd.name
     }

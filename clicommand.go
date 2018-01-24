@@ -7,8 +7,8 @@ import(
     "strings"
 )
 
-func New(name string, desc string) *CLICommand {
-    cmd := &CLICommand{
+func New(name string, desc string) *Command {
+    cmd := &Command{
         name,
         desc,
         nil,
@@ -21,9 +21,9 @@ func New(name string, desc string) *CLICommand {
     return cmd
 }
 
-func (cmd *CLICommand) Parse() error {
+func (cmd *Command) Parse() error {
     var command_ptr = cmd
-    var command_data = &CLICommandData{
+    var command_data = &Data{
         Options: make(map[string]string),
     }
 
@@ -73,7 +73,7 @@ func (cmd *CLICommand) Parse() error {
                 return errors.New(fmt.Sprintf("Unknown option: %s", arg))
             }
         // sub-menu
-        } else if subcmd := command_ptr.GetMenu(arg); subcmd != nil {
+        } else if subcmd := command_ptr.GetCommand(arg); subcmd != nil {
             // repoint our pointer to this sub-menu and continue parsing
             command_ptr = subcmd
         // help command as sub-menu.  This calls directly out to Help() on the current
@@ -98,7 +98,7 @@ func (cmd *CLICommand) Parse() error {
 
     command_data.Cmd = command_ptr
 
-    if command_ptr.f == nil {
+    if command_ptr.handler == nil {
         command_ptr.Help(command_data)
         return errors.New(fmt.Sprintf("No command specified"))
     }
@@ -107,6 +107,6 @@ func (cmd *CLICommand) Parse() error {
         return e
     }
 
-    return command_ptr.f(command_data)
+    return command_ptr.handler(command_data)
 }
 

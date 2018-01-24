@@ -4,8 +4,8 @@ import(
     "strings"
 )
 
-func (cmd *CLICommand) AddArg(name string, desc string, param bool) {
-    arg := &CLICommandArg{
+func (cmd *Command) AddArg(name string, desc string, param bool) {
+    arg := &Arg{
         name,
         desc,
         param,
@@ -13,7 +13,7 @@ func (cmd *CLICommand) AddArg(name string, desc string, param bool) {
     cmd.args = append(cmd.args, arg)
 }
 
-func (cmd *CLICommand) GetArg(name string, param bool) *CLICommandArg {
+func (cmd *Command) GetArg(name string, param bool) *Arg {
     for _, v := range cmd.args {
         if strings.EqualFold(v.name, name) && v.param == param {
             return v

@@ -1,25 +1,25 @@
 package clicommand
 
-type CLICommand struct {
+type Command struct {
     name string
     desc string
-    f CLICommandFunc
-    parent *CLICommand
-    children []*CLICommand
-    args []*CLICommandArg
-    callbacks []CLICommandFunc
+    handler Handler
+    parent *Command
+    children []*Command
+    args []*Arg
+    callbacks []Handler
 }
 
-type CLICommandArg struct {
+type Arg struct {
     name string
     desc string
     param bool
 }
 
-type CLICommandFunc func(*CLICommandData) (err error)
+type Handler func(*Data) (err error)
 
-type CLICommandData struct {
-    Cmd *CLICommand
+type Data struct {
+    Cmd *Command
     Options map[string]string
     Params []string
 }
