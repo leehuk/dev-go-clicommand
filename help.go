@@ -4,7 +4,7 @@ import(
     "fmt"
 )
 
-func (cmd *CLICommand) Help(params []string) {
+func (cmd *CLICommand) Help(data *CLICommandData) {
     fmt.Printf("\n")
     fmt.Printf("  %s\n", cmd.GetMenuNameChain())
     fmt.Printf("  %s\n", cmd.desc)

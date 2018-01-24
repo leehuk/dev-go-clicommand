@@ -147,11 +147,12 @@ func (cmd *CLICommand) Parse() error {
             // take any remaining fields as parameters
             if len(os.Args) >= i {
                 i++
-                command_ptr.Help(os.Args[i:])
-            } else {
-                command_ptr.Help(nil)
+                command_data.params = os.Args[i:]
             }
 
+            command_data.cmd = command_ptr
+
+            command_ptr.Help(command_data)
             return nil
         // some other parameter
         } else {
@@ -160,8 +161,10 @@ func (cmd *CLICommand) Parse() error {
         }
     }
 
+    command_data.cmd = command_ptr
+
     if command_ptr.f == nil {
-        command_ptr.Help(command_data.params)
+        command_ptr.Help(command_data)
         return errors.New(fmt.Sprintf("No command specified"))
     }
 
