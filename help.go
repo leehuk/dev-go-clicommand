@@ -6,8 +6,8 @@ import(
 
 func (cmd *Command) Help(data *Data) {
     fmt.Printf("\n")
-    fmt.Printf("  %s\n", cmd.GetCommandNameChain())
-    fmt.Printf("  %s\n", cmd.desc)
+    fmt.Printf("%s\n", cmd.GetCommandNameChain())
+    fmt.Printf("%s\n", cmd.desc)
     fmt.Printf("\n")
 
     if cmd.parent != nil {
@@ -15,18 +15,18 @@ func (cmd *Command) Help(data *Data) {
     }
 
     if len(cmd.children) > 0 {
-        fmt.Printf("  Available subcommands:\n")
+        fmt.Printf("Available subcommands:\n")
         for _, v := range cmd.children {
-            fmt.Printf("    %-12s %s\n", v.name, v.desc)
+            fmt.Printf("  %-12s %s\n", v.name, v.desc)
         }
         fmt.Printf("\n")
 
         cmd.HelpOptions()
 
-        fmt.Printf("  For help information run:\n")
-        fmt.Printf("    '%s help'\n", cmd.GetCommandNameTop())
-        fmt.Printf("    '%s <commands>* help'\n", cmd.GetCommandNameTop())
-        fmt.Printf("    '%s [commands]* help [subcommand]*'\n", cmd.GetCommandNameTop())
+        fmt.Printf("For help information run:\n")
+        fmt.Printf("  '%s help'\n", cmd.GetCommandNameTop())
+        fmt.Printf("  '%s <commands>* help'\n", cmd.GetCommandNameTop())
+        fmt.Printf("  '%s [commands]* help [subcommand]*'\n", cmd.GetCommandNameTop())
         fmt.Printf("\n")
     }
 }
@@ -44,7 +44,7 @@ func (cmd *Command) HelpOptions() {
         return
     }
 
-    fmt.Printf("  %s options:\n", cmd.GetCommandNameChain())
+    fmt.Printf("%s options:\n", cmd.GetCommandNameChain())
     for _, arg := range cmd.args {
         var prefix string
 
