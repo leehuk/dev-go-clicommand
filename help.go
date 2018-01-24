@@ -47,14 +47,16 @@ func (cmd *Command) HelpOptions() {
     fmt.Printf("%s options:\n", cmd.GetCommandNameChain())
     for _, arg := range cmd.args {
         var prefix string
+        var suffix string
 
         if arg.param {
             prefix = "--"
+            suffix = " <arg>"
         } else {
             prefix = "-"
         }
 
-        fmt.Printf("    %2s%-14s %s\n", prefix, arg.name, arg.desc)
+        fmt.Printf("  %2s%-20s %s\n", prefix, arg.name + suffix, arg.desc)
     }
 
     fmt.Printf("\n")
