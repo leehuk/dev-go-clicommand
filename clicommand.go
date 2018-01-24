@@ -24,7 +24,7 @@ func New(name string, desc string) *CLICommand {
 func (cmd *CLICommand) Parse() error {
     var command_ptr = cmd
     var command_data = &CLICommandData{
-        options: make(map[string]string),
+        Options: make(map[string]string),
     }
 
     // no parameters given, display overall help
@@ -68,7 +68,7 @@ func (cmd *CLICommand) Parse() error {
             }
 
             if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
-                command_data.options[argname] = argval
+                command_data.Options[argname] = argval
             } else {
                 return errors.New(fmt.Sprintf("Unknown option: %s", arg))
             }
@@ -82,21 +82,21 @@ func (cmd *CLICommand) Parse() error {
             // take any remaining fields as parameters
             if len(os.Args) >= i {
                 i++
-                command_data.params = os.Args[i:]
+                command_data.Params = os.Args[i:]
             }
 
-            command_data.cmd = command_ptr
-
+            command_data.Cmd = command_ptr
             command_ptr.Help(command_data)
+
             return nil
         // some other parameter
         } else {
-            command_data.params = os.Args[i:]
+            command_data.Params = os.Args[i:]
             break
         }
     }
 
-    command_data.cmd = command_ptr
+    command_data.Cmd = command_ptr
 
     if command_ptr.f == nil {
         command_ptr.Help(command_data)
