@@ -4,13 +4,14 @@ import(
     "strings"
 )
 
-func (cmd *Command) AddArg(name string, desc string, param bool) {
+func (cmd *Command) AddArg(name string, desc string, param bool)  *Arg {
     arg := &Arg{
         name,
         desc,
         param,
     }
     cmd.args = append(cmd.args, arg)
+    return arg
 }
 
 func (cmd *Command) GetArg(name string, param bool) *Arg {
