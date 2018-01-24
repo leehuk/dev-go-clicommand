@@ -15,6 +15,7 @@ func New(name string, desc string) *CLICommand {
         nil,
         nil,
         nil,
+        nil,
     }
 
     return cmd
@@ -100,6 +101,10 @@ func (cmd *CLICommand) Parse() error {
     if command_ptr.f == nil {
         command_ptr.Help(command_data)
         return errors.New(fmt.Sprintf("No command specified"))
+    }
+
+    if e := command_ptr.RunCallbacks(command_data); e != nil {
+        return e
     }
 
     return command_ptr.f(command_data)

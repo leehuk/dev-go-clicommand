@@ -7,6 +7,7 @@ type CLICommand struct {
     parent *CLICommand
     children []*CLICommand
     args []*CLICommandArg
+    callbacks []CLICommandFunc
 }
 
 type CLICommandArg struct {
