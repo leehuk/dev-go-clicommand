@@ -4,13 +4,20 @@ import(
     "strings"
 )
 
-func (cmd *Command) AddArg(name string, desc string, param bool)  *Arg {
+func (cmd *Command) AddArg(name string, desc string, param bool) *Arg {
     arg := &Arg{
-        name,
-        desc,
-        param,
+        name: name,
+        desc: desc,
+        param: param,
     }
+
     cmd.args = append(cmd.args, arg)
+
+    return arg
+}
+
+func (arg *Arg) SetRequired(required bool) *Arg {
+    arg.required = required
     return arg
 }
 

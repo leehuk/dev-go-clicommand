@@ -13,7 +13,9 @@ type Command struct {
 type Arg struct {
     name string
     desc string
+    descx []string
     param bool
+    required bool
 }
 
 type Handler func(*Data) (err error)
