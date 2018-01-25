@@ -31,7 +31,7 @@ func (cmd *Command) GetArg(name string, param bool) *Arg {
 	// not found, may be a parameter to a parent menu
 	if cmd.parent != nil {
 		return cmd.parent.GetArg(name, param)
-	} else {
-		return nil
 	}
+
+	return nil
 }

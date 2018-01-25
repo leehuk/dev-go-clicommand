@@ -1,7 +1,6 @@
 package clicommand
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -22,14 +21,14 @@ func New(name string, desc string) *Command {
 }
 
 func (cmd *Command) Parse() error {
-	var command_ptr = cmd
-	var command_data = &Data{
+	var commandPtr = cmd
+	var commandData = &Data{
 		Options: make(map[string]string),
 	}
 
 	// no parameters given, display overall help
 	if len(os.Args) <= 1 {
-		command_ptr.Help(nil)
+		commandPtr.Help(nil)
 		return nil
 	}
 
@@ -44,7 +43,7 @@ func (cmd *Command) Parse() error {
 
 			// ensure we do not have an option with no name
 			if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
-				return errors.New(fmt.Sprintf("Invalid option: %s", arg))
+				return fmt.Errorf("Invalid option: %s", arg)
 			}
 
 			if arg[:2] == "--" {
@@ -52,7 +51,7 @@ func (cmd *Command) Parse() error {
 
 				// ensure we have a parameter
 				if i+1 >= len(os.Args) {
-					return errors.New(fmt.Sprintf("Missing parameter to option: %s", arg))
+					return fmt.Errorf("Missing parameter to option: %s", arg)
 				}
 
 				argname = arg[2:]
@@ -69,16 +68,16 @@ func (cmd *Command) Parse() error {
 				argparam = false
 			}
 
-			if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
-				command_data.Options[argname] = argval
+			if subarg := commandPtr.GetArg(argname, argparam); subarg != nil {
+				commandData.Options[argname] = argval
 			} else {
-				return errors.New(fmt.Sprintf("Unknown option: %s", arg))
+				return fmt.Errorf("Unknown option: %s", arg)
 			}
-		} else if subcmd := command_ptr.GetCommand(arg); subcmd != nil {
+		} else if subcmd := commandPtr.GetCommand(arg); subcmd != nil {
 			// sub-menu
 
 			// repoint our pointer to this sub-menu and continue parsing
-			command_ptr = subcmd
+			commandPtr = subcmd
 		} else if strings.EqualFold(arg, "help") {
 			// help command as sub-menu.  This calls directly out to Help() on the current
 			// sub-command object, then returns.
@@ -86,30 +85,30 @@ func (cmd *Command) Parse() error {
 			// take any remaining fields as parameters
 			if len(os.Args) >= i {
 				i++
-				command_data.Params = os.Args[i:]
+				commandData.Params = os.Args[i:]
 			}
 
-			command_data.Cmd = command_ptr
-			command_ptr.Help(command_data)
+			commandData.Cmd = commandPtr
+			commandPtr.Help(commandData)
 
 			return nil
 		} else {
 			// some other parameter
-			command_data.Params = os.Args[i:]
+			commandData.Params = os.Args[i:]
 			break
 		}
 	}
 
-	command_data.Cmd = command_ptr
+	commandData.Cmd = commandPtr
 
-	if command_ptr.handler == nil {
-		command_ptr.Help(command_data)
-		return errors.New(fmt.Sprintf("No command specified"))
+	if commandPtr.handler == nil {
+		commandPtr.Help(commandData)
+		return fmt.Errorf("No command specified")
 	}
 
-	if e := command_ptr.RunCallbacks(command_data); e != nil {
+	if e := commandPtr.RunCallbacks(commandData); e != nil {
 		return e
 	}
 
-	return command_ptr.handler(command_data)
+	return commandPtr.handler(commandData)
 }

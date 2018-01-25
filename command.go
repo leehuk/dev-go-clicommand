@@ -41,7 +41,7 @@ func (cmd *Command) GetCommandNameChain() string {
 func (cmd *Command) GetCommandNameTop() string {
 	if cmd.parent != nil {
 		return cmd.parent.GetCommandNameTop()
-	} else {
-		return cmd.name
 	}
+
+	return cmd.name
 }
