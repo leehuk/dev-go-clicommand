@@ -1,49 +1,47 @@
 package clicommand
 
-import(
-    "strings"
+import (
+	"strings"
 )
 
 func (cmd *Command) AddCommand(name string, desc string, handler Handler) *Command {
-    subcmd := New(name, desc)
-    subcmd.parent = cmd
+	subcmd := New(name, desc)
+	subcmd.parent = cmd
 
-    if handler != nil {
-        subcmd.handler = handler
-    }
+	if handler != nil {
+		subcmd.handler = handler
+	}
 
-    cmd.children = append(cmd.children, subcmd)
+	cmd.children = append(cmd.children, subcmd)
 
-    return subcmd
+	return subcmd
 }
 
 func (cmd *Command) GetCommand(name string) *Command {
-    for _, v := range cmd.children {
-        if strings.EqualFold(v.name, name) {
-            return v
-        }
-    }
+	for _, v := range cmd.children {
+		if strings.EqualFold(v.name, name) {
+			return v
+		}
+	}
 
-    return nil
+	return nil
 }
 
 func (cmd *Command) GetCommandNameChain() string {
-    name := cmd.name
-    if cmd.parent != nil {
-        parentname := cmd.parent.GetCommandNameChain()
-        if parentname != "" {
-            name = parentname + " " + name
-        }
-    }
-    return name
+	name := cmd.name
+	if cmd.parent != nil {
+		parentname := cmd.parent.GetCommandNameChain()
+		if parentname != "" {
+			name = parentname + " " + name
+		}
+	}
+	return name
 }
 
 func (cmd *Command) GetCommandNameTop() string {
-    if cmd.parent != nil {
-        return cmd.parent.GetCommandNameTop()
-    } else {
-        return cmd.name
-    }
+	if cmd.parent != nil {
+		return cmd.parent.GetCommandNameTop()
+	} else {
+		return cmd.name
+	}
 }
-
-

@@ -1,112 +1,115 @@
 package clicommand
 
-import(
-    "errors"
-    "fmt"
-    "os"
-    "strings"
+import (
+	"errors"
+	"fmt"
+	"os"
+	"strings"
 )
 
 func New(name string, desc string) *Command {
-    cmd := &Command{
-        name,
-        desc,
-        nil,
-        nil,
-        nil,
-        nil,
-        nil,
-    }
+	cmd := &Command{
+		name,
+		desc,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+	}
 
-    return cmd
+	return cmd
 }
 
 func (cmd *Command) Parse() error {
-    var command_ptr = cmd
-    var command_data = &Data{
-        Options: make(map[string]string),
-    }
+	var command_ptr = cmd
+	var command_data = &Data{
+		Options: make(map[string]string),
+	}
 
-    // no parameters given, display overall help
-    if len(os.Args) <= 1 {
-        command_ptr.Help(nil)
-        return nil
-    }
+	// no parameters given, display overall help
+	if len(os.Args) <= 1 {
+		command_ptr.Help(nil)
+		return nil
+	}
 
-    for i := 1; i < len(os.Args); i++ {
-        arg := os.Args[i]
+	for i := 1; i < len(os.Args); i++ {
+		arg := os.Args[i]
 
-        // option argument
-        if len(arg) >= 1 && arg[:1] == "-" {
-            var argname string
-            var argval string
-            var argparam bool
+		if len(arg) >= 1 && arg[:1] == "-" {
+			// option argument
+			var argname string
+			var argval string
+			var argparam bool
 
-            // ensure we do not have an option with no name
-            if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
-                return errors.New(fmt.Sprintf("Invalid option: %s", arg))
-            }
+			// ensure we do not have an option with no name
+			if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
+				return errors.New(fmt.Sprintf("Invalid option: %s", arg))
+			}
 
-            // option with parameter: "--xyz"
-            if arg[:2] == "--" {
-                // ensure we have a parameter
-                if i+1 >= len(os.Args) {
-                    return errors.New(fmt.Sprintf("Missing parameter to option: %s", arg))
-                }
+			if arg[:2] == "--" {
+				// option with parameter: "--xyz"
 
-                argname = arg[2:]
-                argval = os.Args[i+1]
-                argparam = true
+				// ensure we have a parameter
+				if i+1 >= len(os.Args) {
+					return errors.New(fmt.Sprintf("Missing parameter to option: %s", arg))
+				}
 
-                // next arg was an option to this param, skip its parsing
-                i++
-                // option without parameter: "-xyz"
-            } else {
-                argname = arg[1:]
-                argval = ""
-                argparam = false
-            }
+				argname = arg[2:]
+				argval = os.Args[i+1]
+				argparam = true
 
-            if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
-                command_data.Options[argname] = argval
-            } else {
-                return errors.New(fmt.Sprintf("Unknown option: %s", arg))
-            }
-        // sub-menu
-        } else if subcmd := command_ptr.GetCommand(arg); subcmd != nil {
-            // repoint our pointer to this sub-menu and continue parsing
-            command_ptr = subcmd
-        // help command as sub-menu.  This calls directly out to Help() on the current
-        // sub-command object, then returns.
-        } else if strings.EqualFold(arg, "help") {
-            // take any remaining fields as parameters
-            if len(os.Args) >= i {
-                i++
-                command_data.Params = os.Args[i:]
-            }
+				// next arg was an option to this param, skip its parsing
+				i++
+			} else {
+				// option without parameter: "-xyz"
 
-            command_data.Cmd = command_ptr
-            command_ptr.Help(command_data)
+				argname = arg[1:]
+				argval = ""
+				argparam = false
+			}
 
-            return nil
-        // some other parameter
-        } else {
-            command_data.Params = os.Args[i:]
-            break
-        }
-    }
+			if subarg := command_ptr.GetArg(argname, argparam); subarg != nil {
+				command_data.Options[argname] = argval
+			} else {
+				return errors.New(fmt.Sprintf("Unknown option: %s", arg))
+			}
+		} else if subcmd := command_ptr.GetCommand(arg); subcmd != nil {
+			// sub-menu
 
-    command_data.Cmd = command_ptr
+			// repoint our pointer to this sub-menu and continue parsing
+			command_ptr = subcmd
+		} else if strings.EqualFold(arg, "help") {
+			// help command as sub-menu.  This calls directly out to Help() on the current
+			// sub-command object, then returns.
 
-    if command_ptr.handler == nil {
-        command_ptr.Help(command_data)
-        return errors.New(fmt.Sprintf("No command specified"))
-    }
+			// take any remaining fields as parameters
+			if len(os.Args) >= i {
+				i++
+				command_data.Params = os.Args[i:]
+			}
 
-    if e := command_ptr.RunCallbacks(command_data); e != nil {
-        return e
-    }
+			command_data.Cmd = command_ptr
+			command_ptr.Help(command_data)
 
-    return command_ptr.handler(command_data)
+			return nil
+		} else {
+			// some other parameter
+			command_data.Params = os.Args[i:]
+			break
+		}
+	}
+
+	command_data.Cmd = command_ptr
+
+	if command_ptr.handler == nil {
+		command_ptr.Help(command_data)
+		return errors.New(fmt.Sprintf("No command specified"))
+	}
+
+	if e := command_ptr.RunCallbacks(command_data); e != nil {
+		return e
+	}
+
+	return command_ptr.handler(command_data)
 }
-
