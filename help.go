@@ -10,9 +10,7 @@ func (cmd *Command) Help(data *Data) {
 	fmt.Printf("%s\n", cmd.desc)
 	fmt.Printf("\n")
 
-	if cmd.parent != nil {
-		cmd.parent.HelpOptionsRecurseRev()
-	}
+	cmd.HelpOptionsRecurseRev()
 
 	if len(cmd.children) > 0 {
 		fmt.Printf("Available subcommands:\n")
@@ -20,9 +18,9 @@ func (cmd *Command) Help(data *Data) {
 			fmt.Printf("  %-12s %s\n", v.name, v.desc)
 		}
 		fmt.Printf("\n")
+	}
 
-		cmd.HelpOptions()
-
+	if cmd.handler == nil {
 		fmt.Printf("For help information run:\n")
 		fmt.Printf("  '%s help'\n", cmd.GetCommandNameTop())
 		fmt.Printf("  '%s <commands>* help'\n", cmd.GetCommandNameTop())
