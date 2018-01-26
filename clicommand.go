@@ -8,13 +8,8 @@ import (
 
 func New(name string, desc string) *Command {
 	cmd := &Command{
-		name,
-		desc,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
+		name: name,
+		desc: desc,
 	}
 
 	return cmd
@@ -94,8 +89,7 @@ func (cmd *Command) Parse() error {
 			return nil
 		} else {
 			// some other parameter
-			commandData.Params = os.Args[i:]
-			break
+			commandData.Params = append(commandData.Params, os.Args[i])
 		}
 	}
 
