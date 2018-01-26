@@ -1,6 +1,6 @@
 package clicommand
 
-func (cmd *Command) AddCallback(handler Handler) {
+func (cmd *Command) BindCallback(handler Handler) {
 	cmd.callbacks = append(cmd.callbacks, handler)
 }
 
