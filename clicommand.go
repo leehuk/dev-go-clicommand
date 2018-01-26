@@ -6,15 +6,6 @@ import (
 	"strings"
 )
 
-func New(name string, desc string) *Command {
-	cmd := &Command{
-		name: name,
-		desc: desc,
-	}
-
-	return cmd
-}
-
 func (cmd *Command) Parse() error {
 	var commandPtr = cmd
 	var commandData = &Data{

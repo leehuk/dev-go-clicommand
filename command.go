@@ -4,16 +4,26 @@ import (
 	"strings"
 )
 
-func (cmd *Command) AddCommand(name string, desc string, handler Handler) *Command {
-	subcmd := New(name, desc)
-	subcmd.parent = cmd
-
-	if handler != nil {
-		subcmd.handler = handler
+func NewCommand(name string, desc string, handler Handler) *Command {
+	cmd := &Command{
+		name:    name,
+		desc:    desc,
+		handler: handler,
 	}
 
-	cmd.children = append(cmd.children, subcmd)
+	return cmd
+}
 
+func (cmd *Command) BindCommand(subcmd ...*Command) {
+	cmd.children = append(cmd.children, subcmd...)
+	for _, v := range subcmd {
+		v.parent = cmd
+	}
+}
+
+func (cmd *Command) NewCommand(name string, desc string, handler Handler) *Command {
+	subcmd := NewCommand(name, desc, handler)
+	cmd.BindCommand(subcmd)
 	return subcmd
 }
 

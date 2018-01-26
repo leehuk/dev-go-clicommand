@@ -4,15 +4,23 @@ import (
 	"strings"
 )
 
-func (cmd *Command) AddArg(name string, desc string, param bool) *Arg {
+func NewArg(name string, desc string, param bool) *Arg {
 	arg := &Arg{
 		name:  name,
 		desc:  desc,
 		param: param,
 	}
 
-	cmd.args = append(cmd.args, arg)
+	return arg
+}
 
+func (cmd *Command) BindArg(arg ...*Arg) {
+	cmd.args = append(cmd.args, arg...)
+}
+
+func (cmd *Command) NewArg(name string, desc string, param bool) *Arg {
+	arg := NewArg(name, desc, param)
+	cmd.BindArg(arg)
 	return arg
 }
 
