@@ -28,8 +28,8 @@ type Command struct {
 	parent       *Command
 	// children Command objects that are children of this one
 	children     []*Command
-	// args Option arguments
-	args         []*Arg
+	// options Option arguments
+	options      []*Option
 	// callbackspre Callbacks to run pre-verification
 	callbackspre []Handler
 	// callbacks Callbacks to run as part of verification
@@ -88,57 +88,57 @@ func (self *Command) GetCommand(name string) *Command {
 	return nil
 }
 
-// NewArg creates a new Arg and automatically binds it as a child of self.
-func (self *Command) NewArg(name string, desc string, param bool) *Arg {
-	arg := NewArg(name, desc, param)
-	arg.BindCommand(self)
-	return arg
+// NewOption creates a new Option and automatically binds it as a child of self.
+func (self *Command) NewOption(name string, desc string, param bool) *Option {
+	option := NewOption(name, desc, param)
+	option.BindCommand(self)
+	return option
 }
 
-// BindArg binds an Arg as a child of self.
-func (self *Command) BindArg(argv ...*Arg) {
-	for _, arg := range argv {
-		arg.BindCommand(self)
+// BindOption binds an Option as a child of self.
+func (self *Command) BindOption(optionv ...*Option) {
+	for _, option := range optionv {
+		option.BindCommand(self)
 	}
 }
 
-// UnbindArg unbinds an Arg so it is no longer a child of self.
-func (self *Command) UnbindArg(argv ...*Arg) {
-	for _, arg := range argv {
-		arg.UnbindCommand(self)
+// UnbindOption unbinds an Option so it is no longer a child of self.
+func (self *Command) UnbindOption(optionv ...*Option) {
+	for _, option := range optionv {
+		option.UnbindCommand(self)
 	}
 }
 
-// GetArg finds a child Arg of self with the given name and the same parameter
+// GetOption finds a child Option of self with the given name and the same parameter
 // type, or nil if not found.
-func (self *Command) GetArg(name string, param bool) *Arg {
-	for _, arg := range self.args {
-		if strings.EqualFold(arg.name, name) && arg.param == param {
-			return arg
+func (self *Command) GetOption(name string, param bool) *Option {
+	for _, option := range self.options {
+		if strings.EqualFold(option.name, name) && option.param == param {
+			return option
 		}
 	}
 
 	// not found, may be a parameter to a parent menu
 	if self.parent != nil {
-		return self.parent.GetArg(name, param)
+		return self.parent.GetOption(name, param)
 	}
 
 	return nil
 }
 
-// hasRequiredArgs iterates over all attached Arg entries in the tree validating 
+// hasRequiredOptions iterates over all attached Option entries in the tree validating 
 // any marked as being required, are appropriately set.  It starts at the leaf and
 // moves up towards the root.
-func (self *Command) hasRequiredArgs(data *Data) error {
-	for _, arg := range self.args {
-		if _, ok := data.Options[arg.name]; arg.required && !ok {
-			return fmt.Errorf("Required option missing: %s", arg.name)
+func (self *Command) hasRequiredOptions(data *Data) error {
+	for _, option := range self.options {
+		if _, ok := data.Options[option.name]; option.required && !ok {
+			return fmt.Errorf("Required option missing: %s", option.name)
 
 		}
 	}
 
 	if self.parent != nil {
-		return self.parent.hasRequiredArgs(data)
+		return self.parent.hasRequiredOptions(data)
 	}
 
 	return nil

@@ -2,7 +2,7 @@ package clicommand
 
 import ()
 
-type Arg struct {
+type Option struct {
 	name     string
 	desc     string
 	param    bool
@@ -10,24 +10,24 @@ type Arg struct {
 	parents  []*Command
 }
 
-func NewArg(name string, desc string, param bool) *Arg {
-	arg := &Arg{
+func NewOption(name string, desc string, param bool) *Option {
+	opt := &Option{
 		name:  name,
 		desc:  desc,
 		param: param,
 	}
 
-	return arg
+	return opt
 }
 
-func (self *Arg) BindCommand(cmd *Command) {
+func (self *Option) BindCommand(cmd *Command) {
 	self.parents = append(self.parents, cmd)
-	cmd.args = append(cmd.args, self)
+	cmd.options = append(cmd.options, self)
 }
 
-func (self *Arg) UnbindCommand(cmd *Command) {
+func (self *Option) UnbindCommand(cmd *Command) {
 	var newparents []*Command
-	var newargs []*Arg
+	var newoptions []*Option
 
 	for _, cmdi := range self.parents {
 		if cmdi != cmd {
@@ -35,25 +35,25 @@ func (self *Arg) UnbindCommand(cmd *Command) {
 		}
 	}
 
-	for _, arg := range cmd.args {
-		if arg != self {
-			newargs = append(newargs, arg)
+	for _, opt := range cmd.options {
+		if opt != self {
+			newoptions = append(newoptions, opt)
 		}
 	}
 
 	self.parents = newparents
-	cmd.args = newargs
+	cmd.options = newoptions
 }
 
-func (self *Arg) GetRequired() bool {
+func (self *Option) GetRequired() bool {
 	return self.required
 }
 
-func (self *Arg) SetRequired() *Arg {
+func (self *Option) SetRequired() *Option {
 	self.required = true
 	return self
 }
 
-func (self *Arg) GetParents() []*Command {
+func (self *Option) GetParents() []*Command {
 	return self.parents
 }

@@ -55,28 +55,28 @@ func helpOptionsRecurseRev(cmd *Command) {
 }
 
 func helpOptions(cmd *Command) {
-	if len(cmd.args) == 0 {
+	if len(cmd.options) == 0 {
 		return
 	}
 
 	fmt.Printf("%s options:\n", cmd.GetNameChain())
-	for _, arg := range cmd.args {
+	for _, option := range cmd.options {
 		var opttype string
 		var optsuffix string
 		var descprefix string
 
-		if arg.param {
+		if option.param {
 			opttype += "--"
 			optsuffix += " <arg>"
 		} else {
 			opttype += "-"
 		}
 
-		if arg.required {
+		if option.required {
 			descprefix += "Required: "
 		}
 
-		fmt.Printf("  %2s%-20s %s\n", opttype, arg.name+optsuffix, descprefix+arg.desc)
+		fmt.Printf("  %2s%-20s %s\n", opttype, option.name+optsuffix, descprefix+option.desc)
 	}
 
 	fmt.Printf("\n")

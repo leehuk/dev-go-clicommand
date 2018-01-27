@@ -18,9 +18,9 @@ func (self *Command) Parse() error {
 
 		if len(arg) >= 1 && arg[:1] == "-" {
 			// option argument
-			var argname string
-			var argval string
-			var argparam bool
+			var optionname string
+			var optionval string
+			var optionparam bool
 
 			// ensure we do not have an option with no name
 			if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
@@ -35,22 +35,22 @@ func (self *Command) Parse() error {
 					return fmt.Errorf("Missing parameter to option: %s", arg)
 				}
 
-				argname = arg[2:]
-				argval = os.Args[i+1]
-				argparam = true
+				optionname = arg[2:]
+				optionval = os.Args[i+1]
+				optionparam = true
 
 				// next arg was an option to this param, skip its parsing
 				i++
 			} else {
 				// option without parameter: "-xyz"
 
-				argname = arg[1:]
-				argval = ""
-				argparam = false
+				optionname = arg[1:]
+				optionval = ""
+				optionparam = false
 			}
 
-			if subarg := commandPtr.GetArg(argname, argparam); subarg != nil {
-				commandData.Options[argname] = argval
+			if subarg := commandPtr.GetOption(optionname, optionparam); subarg != nil {
+				commandData.Options[optionname] = optionval
 			} else {
 				return fmt.Errorf("Unknown option: %s", arg)
 			}
@@ -96,7 +96,7 @@ func (self *Command) Parse() error {
 	}
 
 	if commandPtr != cmdHelp {
-		if e := commandPtr.hasRequiredArgs(commandData); e != nil {
+		if e := commandPtr.hasRequiredOptions(commandData); e != nil {
 			return helpError(commandData, e)
 		}
 
