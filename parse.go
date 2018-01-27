@@ -26,7 +26,7 @@ func (c *Command) Parse() error {
 		Options: make(map[string]string),
 	}
 
-	var param_parsing = false
+	var paramParsing = false
 	for i := 1; i < len(os.Args); i++ {
 		arg := os.Args[i]
 
@@ -68,7 +68,7 @@ func (c *Command) Parse() error {
 			} else {
 				return fmt.Errorf("Unknown option: %s", arg)
 			}
-		} else if param_parsing {
+		} else if paramParsing {
 			// parameter parsing
 			commandData.Params = append(commandData.Params, os.Args[i])
 		} else if subcmd := commandPtr.GetCommand(arg); subcmd != nil {
@@ -95,7 +95,7 @@ func (c *Command) Parse() error {
 			// some other parameter
 			commandData.Params = append(commandData.Params, os.Args[i])
 			// At this point, we only parse things into options or parameters
-			param_parsing = true
+			paramParsing = true
 		}
 	}
 
