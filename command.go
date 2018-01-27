@@ -196,7 +196,7 @@ func (c *Command) runCallbacks(data *Data) error {
 	return nil
 }
 
-// GetNameChain builds a space separated string of all Command names from itself 
+// GetNameChain builds a space separated string of all Command names from itself
 // up to the root.
 func (c *Command) GetNameChain() string {
 	name := c.name
