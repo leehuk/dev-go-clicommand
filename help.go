@@ -18,7 +18,6 @@ func helpError(data *Data, err error) error {
 	return fmt.Errorf("%s", err)
 }
 
-
 func helpUsage(data *Data) error {
 	cmd := data.Cmd
 

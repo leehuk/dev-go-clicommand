@@ -1,7 +1,6 @@
 package clicommand
 
-import (
-)
+import ()
 
 type Arg struct {
 	name     string

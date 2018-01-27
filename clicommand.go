@@ -9,7 +9,7 @@ import (
 func (cmd *Command) Parse() error {
 	var commandPtr = cmd
 	var commandData = &Data{
-		Cmd: cmd,
+		Cmd:     cmd,
 		Options: make(map[string]string),
 	}
 
