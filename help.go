@@ -22,9 +22,8 @@ func (cmd *Command) Help(data *Data) {
 
 	if cmd.handler == nil {
 		fmt.Printf("For help information run:\n")
-		fmt.Printf("  '%s help'\n", cmd.GetCommandNameTop())
-		fmt.Printf("  '%s <commands>* help'\n", cmd.GetCommandNameTop())
-		fmt.Printf("  '%s [commands]* help [subcommand]*'\n", cmd.GetCommandNameTop())
+		fmt.Printf("  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n", 
+			cmd.GetCommandNameTop(), cmd.GetCommandNameTop(), cmd.GetCommandNameTop())
 		fmt.Printf("\n")
 	}
 }
@@ -44,17 +43,22 @@ func (cmd *Command) HelpOptions() {
 
 	fmt.Printf("%s options:\n", cmd.GetCommandNameChain())
 	for _, arg := range cmd.args {
-		var prefix string
-		var suffix string
+		var opttype string
+		var optsuffix string
+		var descprefix string
 
 		if arg.param {
-			prefix = "--"
-			suffix = " <arg>"
+			opttype += "--"
+			optsuffix += " <arg>"
 		} else {
-			prefix = "-"
+			opttype += "-"
 		}
 
-		fmt.Printf("  %2s%-20s %s\n", prefix, arg.name+suffix, arg.desc)
+		if arg.required {
+			descprefix += "Required: "
+		}
+
+		fmt.Printf("  %2s%-20s %s\n", opttype, arg.name+optsuffix, descprefix+arg.desc)
 	}
 
 	fmt.Printf("\n")
