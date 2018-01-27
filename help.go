@@ -14,7 +14,7 @@ var (
 func helpError(data *Data, err error) error {
 	fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	fmt.Fprintf(os.Stderr, "\n")
-	fmt.Fprintf(os.Stderr, "For help information, run: %s help\n", data.Cmd.GetCommandNameChain())
+	fmt.Fprintf(os.Stderr, "For help information, run: %s help\n", data.Cmd.GetNameChain())
 	return fmt.Errorf("%s", err)
 }
 
@@ -22,7 +22,7 @@ func helpUsage(data *Data) error {
 	cmd := data.Cmd
 
 	fmt.Printf("\n")
-	fmt.Printf("%s\n", cmd.GetCommandNameChain())
+	fmt.Printf("%s\n", cmd.GetNameChain())
 	fmt.Printf("%s\n", cmd.desc)
 	fmt.Printf("\n")
 
@@ -39,7 +39,7 @@ func helpUsage(data *Data) error {
 	if cmd.handler == nil {
 		fmt.Printf("For help information run:\n")
 		fmt.Printf("  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n",
-			cmd.GetCommandNameTop(), cmd.GetCommandNameTop(), cmd.GetCommandNameTop())
+			cmd.GetNameTop(), cmd.GetNameTop(), cmd.GetNameTop())
 		fmt.Printf("\n")
 	}
 
@@ -59,7 +59,7 @@ func (cmd *Command) helpOptions() {
 		return
 	}
 
-	fmt.Printf("%s options:\n", cmd.GetCommandNameChain())
+	fmt.Printf("%s options:\n", cmd.GetNameChain())
 	for _, arg := range cmd.args {
 		var opttype string
 		var optsuffix string

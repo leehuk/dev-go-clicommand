@@ -133,10 +133,10 @@ func (cmd *Command) runCallbacks(data *Data) error {
 	return nil
 }
 
-func (cmd *Command) GetCommandNameChain() string {
+func (cmd *Command) GetNameChain() string {
 	name := cmd.name
 	if cmd.parent != nil {
-		parentname := cmd.parent.GetCommandNameChain()
+		parentname := cmd.parent.GetNameChain()
 		if parentname != "" {
 			name = parentname + " " + name
 		}
@@ -144,9 +144,9 @@ func (cmd *Command) GetCommandNameChain() string {
 	return name
 }
 
-func (cmd *Command) GetCommandNameTop() string {
+func (cmd *Command) GetNameTop() string {
 	if cmd.parent != nil {
-		return cmd.parent.GetCommandNameTop()
+		return cmd.parent.GetNameTop()
 	}
 
 	return cmd.name
