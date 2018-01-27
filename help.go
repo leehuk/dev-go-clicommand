@@ -2,15 +2,32 @@ package clicommand
 
 import (
 	"fmt"
+	"os"
 )
 
-func (cmd *Command) Help(data *Data) {
+var (
+	cmdHelp = &Command{
+		handler: helpUsage,
+	}
+)
+
+func helpError(data *Data, err error) error {
+	fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+	fmt.Fprintf(os.Stderr, "\n")
+	fmt.Fprintf(os.Stderr, "For help information, run: %s help\n", data.Cmd.GetCommandNameChain())
+	return fmt.Errorf("%s", err)
+}
+
+
+func helpUsage(data *Data) error {
+	cmd := data.Cmd
+
 	fmt.Printf("\n")
 	fmt.Printf("%s\n", cmd.GetCommandNameChain())
 	fmt.Printf("%s\n", cmd.desc)
 	fmt.Printf("\n")
 
-	cmd.HelpOptionsRecurseRev()
+	cmd.helpOptionsRecurseRev()
 
 	if len(cmd.children) > 0 {
 		fmt.Printf("Available subcommands:\n")
@@ -26,17 +43,19 @@ func (cmd *Command) Help(data *Data) {
 			cmd.GetCommandNameTop(), cmd.GetCommandNameTop(), cmd.GetCommandNameTop())
 		fmt.Printf("\n")
 	}
+
+	return nil
 }
 
-func (cmd *Command) HelpOptionsRecurseRev() {
+func (cmd *Command) helpOptionsRecurseRev() {
 	if cmd.parent != nil {
-		cmd.parent.HelpOptionsRecurseRev()
+		cmd.parent.helpOptionsRecurseRev()
 	}
 
-	cmd.HelpOptions()
+	cmd.helpOptions()
 }
 
-func (cmd *Command) HelpOptions() {
+func (cmd *Command) helpOptions() {
 	if len(cmd.args) == 0 {
 		return
 	}

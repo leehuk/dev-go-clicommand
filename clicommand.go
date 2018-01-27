@@ -9,13 +9,8 @@ import (
 func (cmd *Command) Parse() error {
 	var commandPtr = cmd
 	var commandData = &Data{
+		Cmd: cmd,
 		Options: make(map[string]string),
-	}
-
-	// no parameters given, display overall help
-	if len(os.Args) <= 1 {
-		commandPtr.Help(nil)
-		return nil
 	}
 
 	for i := 1; i < len(os.Args); i++ {
@@ -64,46 +59,50 @@ func (cmd *Command) Parse() error {
 
 			// repoint our pointer to this sub-menu and continue parsing
 			commandPtr = subcmd
+			commandData.Cmd = commandPtr
 		} else if strings.EqualFold(arg, "help") {
-			// help command as sub-menu.  This calls directly out to Help() on the current
-			// sub-command object, then returns.
+			// help command as sub-menu
 
 			// take any remaining fields as parameters
 			if len(os.Args) >= i {
-				i++
-				commandData.Params = os.Args[i:]
+				commandData.Params = os.Args[i+1:]
+				i = len(os.Args)
 			}
 
+			// we now want to call out to help on a dummy command object, but preserving
+			// Cmd as our current position down the menu structure
 			commandData.Cmd = commandPtr
-			commandPtr.Help(commandData)
-
-			return nil
+			cmdHelp.parent = commandPtr
+			commandPtr = cmdHelp
 		} else {
 			// some other parameter
 			commandData.Params = append(commandData.Params, os.Args[i])
 		}
 	}
 
-	commandData.Cmd = commandPtr
-
+	// no subcommand specified
 	if commandPtr.handler == nil {
-		commandPtr.Help(commandData)
-		return fmt.Errorf("No command specified")
-	}
-
-	if e := commandPtr.hasRequiredArgs(commandData); e != nil {
-		commandPtr.Help(commandData)
-		return e
+		// dont error if we're at the root level
+		if commandPtr == cmd {
+			helpUsage(commandData)
+			return nil
+		} else {
+			return helpError(commandData, fmt.Errorf("No subcommand specified"))
+		}
 	}
 
 	if e := commandPtr.runCallbacksPre(commandData); e != nil {
-		commandPtr.Help(commandData)
-		return e
+		return helpError(commandData, e)
 	}
 
-	if e := commandPtr.runCallbacks(commandData); e != nil {
-		commandPtr.Help(commandData)
-		return e
+	if commandPtr != cmdHelp {
+		if e := commandPtr.hasRequiredArgs(commandData); e != nil {
+			return helpError(commandData, e)
+		}
+
+		if e := commandPtr.runCallbacks(commandData); e != nil {
+			return helpError(commandData, e)
+		}
 	}
 
 	return commandPtr.handler(commandData)
