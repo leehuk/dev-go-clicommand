@@ -96,7 +96,12 @@ func (cmd *Command) Parse() error {
 		return e
 	}
 
-	if e := commandPtr.RunCallbacks(commandData); e != nil {
+	if e := commandPtr.RunPreCallbacks(commandData); e != nil {
+		commandPtr.Help(commandData)
+		return e
+	}
+
+	if e := commandPtr.RunValidateCallbacks(commandData); e != nil {
 		commandPtr.Help(commandData)
 		return e
 	}

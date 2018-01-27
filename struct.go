@@ -7,7 +7,8 @@ type Command struct {
 	parent    *Command
 	children  []*Command
 	args      []*Arg
-	callbacks []Handler
+	precallbacks []Handler
+	valcallbacks []Handler
 }
 
 type Arg struct {
