@@ -26,7 +26,7 @@ func helpUsage(data *Data) error {
 	fmt.Printf("%s\n", cmd.desc)
 	fmt.Printf("\n")
 
-	cmd.helpOptionsRecurseRev()
+	helpOptionsRecurseRev(cmd)
 
 	if len(cmd.children) > 0 {
 		fmt.Printf("Available subcommands:\n")
@@ -46,15 +46,15 @@ func helpUsage(data *Data) error {
 	return nil
 }
 
-func (cmd *Command) helpOptionsRecurseRev() {
+func helpOptionsRecurseRev(cmd *Command) {
 	if cmd.parent != nil {
-		cmd.parent.helpOptionsRecurseRev()
+		helpOptionsRecurseRev(cmd.parent)
 	}
 
-	cmd.helpOptions()
+	helpOptions(cmd)
 }
 
-func (cmd *Command) helpOptions() {
+func helpOptions(cmd *Command) {
 	if len(cmd.args) == 0 {
 		return
 	}
