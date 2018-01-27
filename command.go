@@ -61,6 +61,12 @@ func (cmd *Command) BindArg(argv ...*Arg) {
 	}
 }
 
+func (cmd *Command) UnbindArg(argv ...*Arg) {
+	for _, arg := range argv {
+		arg.UnbindCommand(cmd)
+	}
+}
+
 func (cmd *Command) GetArg(name string, param bool) *Arg {
 	for _, arg := range cmd.args {
 		if strings.EqualFold(arg.name, name) && arg.param == param {
