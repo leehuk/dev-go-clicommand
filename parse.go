@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-func (self *Command) Parse() error {
-	var commandPtr = self
+func (c *Command) Parse() error {
+	var commandPtr = c
 	var commandData = &Data{
-		Cmd:     self,
+		Cmd:     c,
 		Options: make(map[string]string),
 	}
 
@@ -83,7 +83,7 @@ func (self *Command) Parse() error {
 	// no subcommand specified
 	if commandPtr.handler == nil {
 		// dont error if we're at the root level
-		if commandPtr == self {
+		if commandPtr == c {
 			helpUsage(commandData)
 			return nil
 		} else {

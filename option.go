@@ -20,40 +20,40 @@ func NewOption(name string, desc string, param bool) *Option {
 	return opt
 }
 
-func (self *Option) BindCommand(cmd *Command) {
-	self.parents = append(self.parents, cmd)
-	cmd.options = append(cmd.options, self)
+func (o *Option) BindCommand(cmd *Command) {
+	o.parents = append(o.parents, cmd)
+	cmd.options = append(cmd.options, o)
 }
 
-func (self *Option) UnbindCommand(cmd *Command) {
+func (o *Option) UnbindCommand(cmd *Command) {
 	var newparents []*Command
 	var newoptions []*Option
 
-	for _, cmdi := range self.parents {
+	for _, cmdi := range o.parents {
 		if cmdi != cmd {
 			newparents = append(newparents, cmdi)
 		}
 	}
 
 	for _, opt := range cmd.options {
-		if opt != self {
+		if opt != o {
 			newoptions = append(newoptions, opt)
 		}
 	}
 
-	self.parents = newparents
+	o.parents = newparents
 	cmd.options = newoptions
 }
 
-func (self *Option) GetRequired() bool {
-	return self.required
+func (o *Option) GetRequired() bool {
+	return o.required
 }
 
-func (self *Option) SetRequired() *Option {
-	self.required = true
-	return self
+func (o *Option) SetRequired() *Option {
+	o.required = true
+	return o
 }
 
-func (self *Option) GetParents() []*Command {
-	return self.parents
+func (o *Option) GetParents() []*Command {
+	return o.parents
 }
