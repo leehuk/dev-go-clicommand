@@ -2,7 +2,7 @@
 // Licensed under the BSD 2-Clause License as found in LICENSE.txt
 
 /*
-Library for creating CLI applications with subcommand/api-style interfaces and option/parameter handling
+Package clicommand provides CLI applications with subcommand/api-style interfaces and option/parameter handling
 
 The clicommand library makes the creation of Go CLI applications using a subcommand
 interface easier.  The subcommand interface is structured as a parent/child tree so

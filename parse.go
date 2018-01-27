@@ -86,9 +86,9 @@ func (c *Command) Parse() error {
 		if commandPtr == c {
 			helpUsage(commandData)
 			return nil
-		} else {
-			return helpError(commandData, fmt.Errorf("No subcommand specified"))
 		}
+
+		return helpError(commandData, fmt.Errorf("No subcommand specified"))
 	}
 
 	if e := commandPtr.runCallbacksPre(commandData); e != nil {
