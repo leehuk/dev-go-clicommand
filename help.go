@@ -22,7 +22,7 @@ func (cmd *Command) Help(data *Data) {
 
 	if cmd.handler == nil {
 		fmt.Printf("For help information run:\n")
-		fmt.Printf("  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n", 
+		fmt.Printf("  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n",
 			cmd.GetCommandNameTop(), cmd.GetCommandNameTop(), cmd.GetCommandNameTop())
 		fmt.Printf("\n")
 	}

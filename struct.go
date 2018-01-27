@@ -1,12 +1,12 @@
 package clicommand
 
 type Command struct {
-	name      string
-	desc      string
-	handler   Handler
-	parent    *Command
-	children  []*Command
-	args      []*Arg
+	name         string
+	desc         string
+	handler      Handler
+	parent       *Command
+	children     []*Command
+	args         []*Arg
 	precallbacks []Handler
 	valcallbacks []Handler
 }
