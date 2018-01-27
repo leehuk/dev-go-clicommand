@@ -91,17 +91,17 @@ func (cmd *Command) Parse() error {
 		return fmt.Errorf("No command specified")
 	}
 
-	if e := commandPtr.HasRequiredArgs(commandData); e != nil {
+	if e := commandPtr.hasRequiredArgs(commandData); e != nil {
 		commandPtr.Help(commandData)
 		return e
 	}
 
-	if e := commandPtr.RunPreCallbacks(commandData); e != nil {
+	if e := commandPtr.runCallbacksPre(commandData); e != nil {
 		commandPtr.Help(commandData)
 		return e
 	}
 
-	if e := commandPtr.RunValidateCallbacks(commandData); e != nil {
+	if e := commandPtr.runCallbacks(commandData); e != nil {
 		commandPtr.Help(commandData)
 		return e
 	}

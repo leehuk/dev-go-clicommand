@@ -1,24 +1,5 @@
 package clicommand
 
-type Command struct {
-	name         string
-	desc         string
-	handler      Handler
-	parent       *Command
-	children     []*Command
-	args         []*Arg
-	precallbacks []Handler
-	valcallbacks []Handler
-}
-
-type Arg struct {
-	name     string
-	desc     string
-	descx    []string
-	param    bool
-	required bool
-}
-
 type Handler func(*Data) (err error)
 
 type Data struct {
