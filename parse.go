@@ -6,6 +6,19 @@ import (
 	"strings"
 )
 
+// Parse parses the command line from os.Args under the supplied command tree, then
+// acts accordingly based on the results.
+//
+// Everything specified on the command line either guides us towards the correct
+// command to run, is used as an option, or becomes a generic parameter.
+//
+// Once parsing is complete, pre callbacks are made, then we either proceed to
+// display internal help information if requested, or we perform internal
+// verification, then call the validation callbacks, then finally if everything
+// is ok call the wanted Handler.
+//
+// The parsing will steal the arg "help" if it detects it as the first unknown
+// parameter, allowing for easy access to the available commands and options.
 func (c *Command) Parse() error {
 	var commandPtr = c
 	var commandData = &Data{
@@ -13,6 +26,7 @@ func (c *Command) Parse() error {
 		Options: make(map[string]string),
 	}
 
+	var param_parsing = false
 	for i := 1; i < len(os.Args); i++ {
 		arg := os.Args[i]
 
@@ -54,6 +68,9 @@ func (c *Command) Parse() error {
 			} else {
 				return fmt.Errorf("Unknown option: %s", arg)
 			}
+		} else if param_parsing {
+			// parameter parsing
+			commandData.Params = append(commandData.Params, os.Args[i])
 		} else if subcmd := commandPtr.GetCommand(arg); subcmd != nil {
 			// sub-menu
 
@@ -77,6 +94,8 @@ func (c *Command) Parse() error {
 		} else {
 			// some other parameter
 			commandData.Params = append(commandData.Params, os.Args[i])
+			// At this point, we only parse things into options or parameters
+			param_parsing = true
 		}
 	}
 
