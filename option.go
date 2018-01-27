@@ -1,7 +1,5 @@
 package clicommand
 
-import ()
-
 type Option struct {
 	name     string
 	desc     string

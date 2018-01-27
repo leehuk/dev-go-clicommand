@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// A Command represents a command of the cli program.  These are chained into a tree 
+// A Command represents a command of the cli program.  These are chained into a tree
 // with links in both child and parent directions
 //
 // Each child can itself be a parent, but only leaf nodes (children with no children)
@@ -19,21 +19,21 @@ import (
 //      clicommand api delete ==> handler
 type Command struct {
 	// name Name of subcommand
-	name         string
+	name string
 	// desc Description of subcommand
-	desc         string
+	desc string
 	// handler Handler function subcommand calls, nil for subcommands with children
-	handler      Handler
+	handler Handler
 	// parent Command object thats the parent of this one
-	parent       *Command
+	parent *Command
 	// children Command objects that are children of this one
-	children     []*Command
+	children []*Command
 	// options Option arguments
-	options      []*Option
+	options []*Option
 	// callbackspre Callbacks to run pre-verification
 	callbackspre []Handler
 	// callbacks Callbacks to run as part of verification
-	callbacks    []Handler
+	callbacks []Handler
 }
 
 // NewCommand creates a new command, unbound to parents.  This is generally only used
@@ -61,7 +61,7 @@ func (c *Command) NewCommand(name string, desc string, handler Handler) *Command
 	return cmd
 }
 
-// BindCommand binds a series of subcommands as children.  Links are placed in both 
+// BindCommand binds a series of subcommands as children.  Links are placed in both
 // directions, from parent -> child and child -> parent.
 //
 // If the parent already has a handler set, this will panic.
@@ -126,7 +126,7 @@ func (c *Command) GetOption(name string, param bool) *Option {
 	return nil
 }
 
-// hasRequiredOptions iterates over all attached Option entries in the tree validating 
+// hasRequiredOptions iterates over all attached Option entries in the tree validating
 // any marked as being required, are appropriately set.  It starts at the leaf and
 // moves up towards the root.
 func (c *Command) hasRequiredOptions(data *Data) error {
