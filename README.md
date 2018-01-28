@@ -85,4 +85,4 @@ For help information run:
 
 ## Sample Program
 
-A sample [examples/helloworld/helloworld.go(helloworld.go) program can be found under examples.
+A sample [examples/helloworld/helloworld.go](helloworld.go) program can be found under examples.
