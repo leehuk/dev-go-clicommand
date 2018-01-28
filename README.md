@@ -1,10 +1,15 @@
-# golang-clicommand
+# go-clicommand
 
 clicommand provides Go CLI applications with subcommand/api-style interfaces and option/parameter handling
 
 [![GoDoc](https://godoc.org/github.com/leehuk/go-clicommand?status.svg)](https://godoc.org/github.com/leehuk/go-clicommand)
 [![Go Report Card](https://goreportcard.com/badge/github.com/leehuk/go-clicommand)](https://goreportcard.com/report/github.com/leehuk/go-clicommand)
 [![Build Status](https://travis-ci.org/leehuk/go-clicommand.svg?branch=master)](https://travis-ci.org/leehuk/go-clicommand)
+
+## Installation
+```
+go get -u github.com/leehuk/go-clicommand
+```
 
 ## Overview
 The clicommand library makes the creation of Go CLI applications using a subcommand
