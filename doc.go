@@ -46,5 +46,10 @@
 	As each Command and Option is added to the tree with a name and description, the parser can
 	automatically construct help information and display it when the program is run without
 	parameters, or the 'help' command is used.
+
+	Sample Program
+
+	This is a sample program built using this module.
+
 */
 package clicommand
