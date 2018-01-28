@@ -37,7 +37,7 @@ This allows building a CLI application which can mimic an API, e.g.:
 ## CLI Options
 
 Options can be attached to the tree at any point and these are inherited along the
-tree, so child Command objects also have Options from their parent Comment objects.  Options
+tree, so child commands also have options from their parent commands.  Options
 are defined as either having or not having parameters, options with parameters use
 double dashes and options without parameters use single dashes as selectors.
 
@@ -50,4 +50,39 @@ things as a simple generic parameter, rather than requiring its specified as an 
 
 As each command and option is added to the tree with a name and description, the parser can
 automatically construct help information and display it when the program is run without
-parameters, or the inbuilt 'help' command is used.
+parameters, or the 'help' command is used.  The following example uses the sample helloworld
+program from https://git.io/vNDug
+
+```
+[golang@1394e13b1fac helloworld]$ ./helloworld help
+helloworld
+Sample hello world program
+
+Available subcommands:
+    hello        Hello saying options
+
+For help information run:
+  'helloworld help' .. 'helloworld <commands>* help' .. 'helloworld [commands]* help [subcommand]*'
+[golang@1394e13b1fac helloworld]$
+```
+
+```
+[golang@1394e13b1fac helloworld]$ ./helloworld hello say help
+helloworld hello say
+Says something
+
+helloworld hello options:
+    -u                    Uppercase output
+    -lower                Lowercase output
+
+helloworld hello say options:
+    --say <arg>            Required: Thing to say
+
+For help information run:
+  'helloworld help' .. 'helloworld <commands>* help' .. 'helloworld [commands]* help [subcommand]*'
+[golang@1394e13b1fac helloworld]$
+```
+
+## Sample Program
+
+A sample [examples/helloworld/helloworld.go(helloworld.go) program can be found under examples.
