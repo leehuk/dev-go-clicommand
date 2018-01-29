@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	cmdRootName string = "root"
-	cmdRootDesc string = "root description"
+	cmdRootName  string = "root"
+	cmdRootDesc  string = "root description"
 	cmdChildName string = "child"
 	cmdChildDesc string = "child description"
 
-	optionName string = "option"
-	optionDesc string = "option description"
-	optionParam = false
+	optionName  string = "option"
+	optionDesc  string = "option description"
+	optionParam        = false
 )
 
 func testHandlerFunc(data *Data) error {
