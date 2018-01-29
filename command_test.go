@@ -5,112 +5,197 @@ package clicommand
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+var (
+	cmdRootName string = "root"
+	cmdRootDesc string = "root description"
+	cmdChildName string = "child"
+	cmdChildDesc string = "child description"
+
+	optionName string = "option"
+	optionDesc string = "option description"
+	optionParam = false
 )
 
 func testHandlerFunc(data *Data) error {
 	return nil
 }
 
-func TestNewCommand(t *testing.T) {
-	var cmdRootName = "root"
-	var cmdRootDesc = "root description"
+func newCommandRoot(handler Handler) *Command {
+	return NewCommand(cmdRootName, cmdRootDesc, handler)
+}
 
-	var cmdChildName = "child"
+func newCommandChild(handler Handler) *Command {
+	return NewCommand(cmdChildName, cmdChildDesc, handler)
+}
+
+func (cmdRoot *Command) newCommandChild(handler Handler) *Command {
+	return cmdRoot.NewCommand(cmdChildName, cmdChildDesc, handler)
+}
+
+func newOption() *Option {
+	return NewOption(optionName, optionDesc, optionParam)
+}
+
+func (cmd *Command) newOption() *Option {
+	return cmd.NewOption(optionName, optionDesc, optionParam)
+}
+
+// NewCommand testing, both unbound and bound forms, with/without handlers
+func TestNewCommand(t *testing.T) {
+	assert := assert.New(t)
 
 	// create our root object, and validate all struct elements are as expected
-	cmdRoot := NewCommand(cmdRootName, cmdRootDesc, nil)
-
-	if cmdRoot.name != cmdRootName {
-		t.Errorf("NewCommand(cmdRoot.name); expecting %s; got %s", cmdRootName, cmdRoot.name)
-	}
-
-	if cmdRoot.desc != cmdRootDesc {
-		t.Errorf("NewCommand(cmdRoot.desc); expecting %s; got %s", cmdRootDesc, cmdRoot.desc)
-	}
-
-	if cmdRoot.handler != nil {
-		t.Errorf("NewCommand(cmdRoot.handler); expecting %v; got %v", nil, cmdRoot.handler)
-	}
-
-	if cmdRoot.parent != nil {
-		t.Errorf("NewCommand(cmdRoot.parent); expecting %v; got %v", nil, cmdRoot.parent)
-	}
-
-	if len(cmdRoot.children) != 0 {
-		t.Errorf("NewCommand(len(cmdRoot.children)); expecting 0; got %d", len(cmdRoot.children))
-	}
-
-	if len(cmdRoot.options) != 0 {
-		t.Errorf("NewCommand(len(cmdRoot.options)); expecting 0; got %d", len(cmdRoot.children))
-	}
-
-	if len(cmdRoot.callbackspre) != 0 {
-		t.Errorf("NewCommand(len(cmdRoot.options)); expecting 0; got %d", len(cmdRoot.children))
-	}
-
-	if len(cmdRoot.callbacks) != 0 {
-		t.Errorf("NewCommand(len(cmdRoot.options)); expecting 0; got %d", len(cmdRoot.children))
-	}
+	cmdRoot := newCommandRoot(nil)
+	assert.Equal(cmdRootName, cmdRoot.name, "command.Name error")
+	assert.Equal(cmdRootDesc, cmdRoot.desc, "command.Desc error")
+	assert.Nil(cmdRoot.handler)
+	assert.Nil(cmdRoot.parent)
+	assert.Empty(cmdRoot.children)
+	assert.Empty(cmdRoot.options)
+	assert.Empty(cmdRoot.callbackspre)
+	assert.Empty(cmdRoot.callbacks)
 
 	// create a nested object and verify it
-	cmdNest := cmdRoot.NewCommand(cmdChildName, "test", nil)
+	cmdChild := cmdRoot.newCommandChild(nil)
 
-	if cmdNest.parent == nil {
-		t.Errorf("NewCommand(cmdNest.parent); expecting ptr; got %v", nil)
-	} else if cmdNest.parent.name != cmdRootName {
-		t.Errorf("NewCommand(cmdNest.parent.name); expecting %s; got %s", cmdRootName, cmdNest.parent.name)
+	if assert.NotNil(cmdChild.parent) {
+		assert.Equal(cmdRootName, cmdChild.parent.name, "Command.parent.name error")
 	}
 
-	if len(cmdRoot.children) != 1 {
-		t.Errorf("NewCommand(len(cmdRoot.children)); expecting 1; got %d", len(cmdRoot.children))
-	} else {
-		if cmdRoot.children[0].name != cmdChildName {
-			t.Errorf("NewCommand(cmdRoot.children[0].name); expecting %s; got %s", cmdChildName, cmdRoot.children[0].name)
-		}
+	if assert.Len(cmdRoot.children, 1) {
+		assert.Equal(cmdChildName, cmdRoot.children[0].name, "Command.children[0].name")
 	}
+
+	cmdHandler := newCommandRoot(testHandlerFunc)
+	assert.NotNil(cmdHandler.handler)
 }
 
-func TestNewCommandHandler(t *testing.T) {
-	cmd := NewCommand("test", "test", testHandlerFunc)
-
-	if cmd.handler == nil {
-		t.Errorf("NewCommandHandler(handler); expecting !%v; got %v", nil, cmd.handler)
-	}
-}
-
+// BindCommand testing, create parent/child objects and bind them
 func TestBindCommand(t *testing.T) {
-	var cmdRootName = "root"
-	var cmdChildName = "child"
+	assert := assert.New(t)
 
-	cmdRoot := NewCommand(cmdRootName, "root description", nil)
-	cmdChild := NewCommand(cmdChildName, "child description", nil)
+	cmdRoot := newCommandRoot(nil)
+	cmdChild := newCommandChild(nil)
 	cmdRoot.BindCommand(cmdChild)
 
-	if cmdChild.parent == nil {
-		t.Errorf("BindCommand(cmdChild.parent); expecting ptr; got %v", nil)
-	} else if cmdChild.parent.name != cmdRootName {
-		t.Errorf("BindCommand(cmdChild.parent.name); expecting %s; got %s", cmdRootName, cmdChild.parent.name)
+	if assert.NotNil(cmdChild.parent) {
+		assert.Equal(cmdRootName, cmdChild.parent.name)
 	}
 
-	if len(cmdRoot.children) != 1 {
-		t.Errorf("BindCommand(len(cmdRoot.children)); expecting 1; got %d", len(cmdRoot.children))
-	} else {
-		if cmdRoot.children[0].name != cmdChildName {
-			t.Errorf("BindCommand(cmdRoot.children[0].name); expecting %s; got %s", cmdChildName, cmdRoot.children[0].name)
-		}
+	if assert.Len(cmdRoot.children, 1) {
+		assert.Equal(cmdChildName, cmdRoot.children[0].name)
 	}
 }
 
+// GetCommand testing, create bound parent/child and validate we can find
+// the child
 func TestGetCommand(t *testing.T) {
-	var cmdRootName = "root"
-	var cmdChildName = "child"
+	assert := assert.New(t)
 
-	cmdRoot := NewCommand(cmdRootName, "root description", nil)
-	cmdRoot.NewCommand(cmdChildName, "child description", nil)
+	cmdRoot := newCommandRoot(nil)
+	cmdRoot.newCommandChild(nil)
 
-	if cmdChild := cmdRoot.GetCommand(cmdChildName); cmdChild == nil {
-		t.Errorf("GetCommand(cmdChildName); expecting ptr; got %v", nil)
-	} else if cmdChild.name != cmdChildName {
-		t.Errorf("GetCommand(cmdChildName).name; expecting %s; got %s", cmdChildName, cmdChild.name)
+	cmdChild := cmdRoot.GetCommand(cmdChildName)
+
+	if assert.NotNil(cmdChild) {
+		assert.Equal(cmdChildName, cmdChild.name)
 	}
+}
+
+// NewOption testing, basic validation it is bound, most testing in option_test.go
+func TestNewOption(t *testing.T) {
+	assert := assert.New(t)
+
+	cmd := newCommandRoot(nil)
+	option := cmd.newOption()
+
+	if assert.Len(option.parents, 1) {
+		assert.Len(cmd.options, 1)
+	}
+}
+
+// BindOption testing, validation it is bound
+func TestBindOption(t *testing.T) {
+	assert := assert.New(t)
+
+	cmd := newCommandRoot(nil)
+	option := newOption()
+	cmd.BindOption(option)
+
+	assert.Len(option.parents, 1)
+	assert.Len(cmd.options, 1)
+}
+
+// UnbindOption, validate we bind and then unbind
+func TestUnbindOption(t *testing.T) {
+	assert := assert.New(t)
+
+	cmd := newCommandRoot(nil)
+	option := cmd.newOption()
+
+	// first verify its bound
+	if assert.Len(option.parents, 1) {
+		cmd.UnbindOption(option)
+		assert.Empty(option.parents)
+		assert.Empty(cmd.options)
+	}
+
+}
+
+// GetOption, create bound cmd/option and validate we can find it,
+// then add child and validate we can find the parent option through it
+func TestGetOption(t *testing.T) {
+	assert := assert.New(t)
+
+	cmdRoot := newCommandRoot(nil)
+	cmdRoot.newOption()
+
+	option := cmdRoot.GetOption(optionName, optionParam)
+	assert.NotNil(option)
+
+	cmdChild := cmdRoot.newCommandChild(nil)
+	option = cmdChild.GetOption(optionName, optionParam)
+}
+
+// BindCallbackPre, create simple callback and validate its added
+func TestBindCallbackPre(t *testing.T) {
+	assert := assert.New(t)
+
+	cmd := newCommandRoot(nil)
+	cmd.BindCallbackPre(testHandlerFunc)
+
+	assert.Len(cmd.callbackspre, 1)
+}
+
+// BindCallback, create simple callback and validate its added
+func TestBindCallback(t *testing.T) {
+	assert := assert.New(t)
+
+	cmd := newCommandRoot(nil)
+	cmd.BindCallback(testHandlerFunc)
+
+	assert.Len(cmd.callbacks, 1)
+}
+
+// TestGetNameChain, create parent/child commands, and validate name
+func TestGetNameChain(t *testing.T) {
+	assert := assert.New(t)
+
+	cmdRoot := newCommandRoot(nil)
+	cmdChild := cmdRoot.newCommandChild(nil)
+
+	assert.Equal(cmdRootName+" "+cmdChildName, cmdChild.GetNameChain(), "Command.GetNameChild()")
+}
+
+func TestGetNameParent(t *testing.T) {
+	assert := assert.New(t)
+
+	cmdRoot := newCommandRoot(nil)
+	cmdChild := cmdRoot.newCommandChild(nil)
+
+	assert.Equal(cmdRootName, cmdChild.GetNameTop(), "Command.GetNameTop()")
 }
