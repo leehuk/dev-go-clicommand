@@ -96,6 +96,7 @@ func Example() {
 	cliHelloSomething.NewOption("say", "Thing to say", true).SetRequired()
 
 	if error := cliRoot.Parse(); error != nil {
+		fmt.Printf("%v\n", error)
 		os.Exit(1)
 	}
 }

@@ -1,7 +1,6 @@
 package clicommand
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
@@ -9,8 +8,8 @@ import (
 // Parse parses the command line from os.Args under the supplied command tree, then
 // acts accordingly based on the results.
 //
-// Everything specified on the command line either guides us towards the correct
-// command to run, is used as an option, or becomes a generic parameter.
+// Everything specified on the command line is either a subcommand, option or a
+// generic parameter.
 //
 // Once parsing is complete, pre callbacks are made, then we either proceed to
 // display internal help information if requested, or we perform internal
@@ -19,6 +18,8 @@ import (
 //
 // The parsing will steal the arg "help" if it detects it as the first unknown
 // parameter, allowing for easy access to the available commands and options.
+//
+// If parsing is not ok, it will return one of several internal error types.
 func (c *Command) Parse() error {
 	var commandPtr = c
 	var commandData = &Data{
@@ -38,7 +39,7 @@ func (c *Command) Parse() error {
 
 			// ensure we do not have an option with no name
 			if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
-				return fmt.Errorf("Invalid option: %s", arg)
+				return &ErrOptionUnknown{arg}
 			}
 
 			if arg[:2] == "--" {
@@ -46,7 +47,7 @@ func (c *Command) Parse() error {
 
 				// ensure we have a parameter
 				if i+1 >= len(os.Args) {
-					return fmt.Errorf("Missing parameter to option: %s", arg)
+					return &ErrOptionMissingParam{arg}
 				}
 
 				optionname = arg[2:]
@@ -66,7 +67,7 @@ func (c *Command) Parse() error {
 			if subarg := commandPtr.GetOption(optionname, optionparam); subarg != nil {
 				commandData.Options[optionname] = optionval
 			} else {
-				return fmt.Errorf("Unknown option: %s", arg)
+				return &ErrOptionUnknown{arg}
 			}
 		} else if paramParsing {
 			// parameter parsing
@@ -91,10 +92,13 @@ func (c *Command) Parse() error {
 			commandData.Cmd = commandPtr
 			cmdHelp.parent = commandPtr
 			commandPtr = cmdHelp
+		} else if commandPtr.handler == nil {
+			// we're in a parent menu, so this cant be a parameter -- but the next argument
+			// is not a valid subcommand.
+			return &ErrCommandInvalid{arg}
 		} else {
-			// some other parameter
+			// we've now reached a child menu, and all that remains are parameters and options
 			commandData.Params = append(commandData.Params, os.Args[i])
-			// At this point, we only parse things into options or parameters
 			paramParsing = true
 		}
 	}
@@ -107,20 +111,20 @@ func (c *Command) Parse() error {
 			return nil
 		}
 
-		return helpError(commandData, fmt.Errorf("No subcommand specified"))
+		return &ErrCommandMissing{}
 	}
 
 	if e := commandPtr.runCallbacksPre(commandData); e != nil {
-		return helpError(commandData, e)
+		return &ErrCallbackPre{e.Error()}
 	}
 
 	if commandPtr != cmdHelp {
 		if e := commandPtr.hasRequiredOptions(commandData); e != nil {
-			return helpError(commandData, e)
+			return &ErrOptionMissing{e.Error()}
 		}
 
 		if e := commandPtr.runCallbacks(commandData); e != nil {
-			return helpError(commandData, e)
+			return &ErrCallback{e.Error()}
 		}
 	}
 
