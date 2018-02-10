@@ -32,8 +32,8 @@ func newCommandChild(handler Handler) *Command {
 	return NewCommand(cmdChildName, cmdChildDesc, handler)
 }
 
-func (cmdRoot *Command) newCommandChild(handler Handler) *Command {
-	return cmdRoot.NewCommand(cmdChildName, cmdChildDesc, handler)
+func (cmd *Command) newCommandChild(handler Handler) *Command {
+	return cmd.NewCommand(cmdChildName, cmdChildDesc, handler)
 }
 
 func newOption() *Option {
@@ -159,6 +159,7 @@ func TestGetOption(t *testing.T) {
 
 	cmdChild := cmdRoot.newCommandChild(nil)
 	option = cmdChild.GetOption(optionName, optionParam)
+	assert.NotNil(option)
 }
 
 // BindCallbackPre, create simple callback and validate its added
