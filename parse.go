@@ -1,6 +1,7 @@
 package clicommand
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -129,6 +130,7 @@ func (c *Command) Parse() error {
 	}
 
 	if e := commandPtr.handler(commandData); e != nil {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", e)
 		return &ErrCommandError{e.Error()}
 	}
 
