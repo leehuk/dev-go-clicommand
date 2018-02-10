@@ -12,40 +12,49 @@ var (
 )
 
 func helpError(data *Data, err error) error {
-	helpUsage(data)
+	helpOutput(data, true)
 
 	fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	fmt.Fprintf(os.Stderr, "\n")
 	fmt.Fprintf(os.Stderr, "For help information, run: %s help\n", data.Cmd.GetNameChain())
+
 	return err
 }
 
 func helpUsage(data *Data) error {
+	helpOutput(data, false)
+	return nil
+}
+
+func helpOutput(data *Data, stderr bool) {
+	out := os.Stdout
+	if stderr {
+		out = os.Stderr
+	}
+
 	cmd := data.Cmd
 
-	fmt.Printf("\n")
-	fmt.Printf("%s\n", cmd.GetNameChain())
-	fmt.Printf("%s\n", cmd.desc)
-	fmt.Printf("\n")
+	fmt.Fprintf(out, "\n")
+	fmt.Fprintf(out, "%s\n", cmd.GetNameChain())
+	fmt.Fprintf(out, "%s\n", cmd.desc)
+	fmt.Fprintf(out, "\n")
 
 	helpOptionsRecurseRev(cmd)
 
 	if len(cmd.children) > 0 {
-		fmt.Printf("Available subcommands:\n")
+		fmt.Fprintf(out, "Available subcommands:\n")
 		for _, v := range cmd.children {
-			fmt.Printf("  %-12s %s\n", v.name, v.desc)
+			fmt.Fprintf(out, "  %-12s %s\n", v.name, v.desc)
 		}
-		fmt.Printf("\n")
+		fmt.Fprintf(out, "\n")
 	}
 
 	if cmd.handler == nil {
-		fmt.Printf("For help information run:\n")
-		fmt.Printf("  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n",
+		fmt.Fprintf(out, "For help information run:\n")
+		fmt.Fprintf(out, "  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n",
 			cmd.GetNameTop(), cmd.GetNameTop(), cmd.GetNameTop())
-		fmt.Printf("\n")
+		fmt.Fprintf(out, "\n")
 	}
-
-	return nil
 }
 
 func helpOptionsRecurseRev(cmd *Command) {
