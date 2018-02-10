@@ -128,5 +128,9 @@ func (c *Command) Parse() error {
 		}
 	}
 
-	return commandPtr.handler(commandData)
+	if e := commandPtr.handler(commandData); e != nil {
+		return &ErrCommandError{e.Error()}
+	}
+
+	return nil
 }

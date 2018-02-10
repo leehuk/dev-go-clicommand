@@ -14,6 +14,11 @@ type ErrCallbackPre struct {
 	data string
 }
 
+// ErrCommandError Error type for when a command has returned an error.
+type ErrCommandError struct {
+	data string
+}
+
 // ErrCommandInvalid Error type for when the command line uses a subcommand
 // that does not exist.
 type ErrCommandInvalid struct {
@@ -48,6 +53,10 @@ func (e *ErrCallback) Error() string {
 
 func (e *ErrCallbackPre) Error() string {
 	return fmt.Sprintf("CallbackPre error: %s", e.data)
+}
+
+func (e *ErrCommandError) Error() string {
+	return fmt.Sprintf("Error: %s", e.data)
 }
 
 func (e *ErrCommandInvalid) Error() string {
