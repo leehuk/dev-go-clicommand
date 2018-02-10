@@ -12,10 +12,12 @@ var (
 )
 
 func helpError(data *Data, err error) error {
+	helpUsage(data)
+
 	fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 	fmt.Fprintf(os.Stderr, "\n")
 	fmt.Fprintf(os.Stderr, "For help information, run: %s help\n", data.Cmd.GetNameChain())
-	return fmt.Errorf("%s", err)
+	return err
 }
 
 func helpUsage(data *Data) error {

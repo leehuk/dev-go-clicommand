@@ -39,7 +39,7 @@ func (c *Command) Parse() error {
 
 			// ensure we do not have an option with no name
 			if len(arg) == 1 && arg[:1] == "-" || len(arg) == 2 && arg[:2] == "--" {
-				return &ErrOptionUnknown{arg}
+				return helpError(commandData, &ErrOptionUnknown{arg})
 			}
 
 			if arg[:2] == "--" {
@@ -67,7 +67,7 @@ func (c *Command) Parse() error {
 			if subarg := commandPtr.GetOption(optionname, optionparam); subarg != nil {
 				commandData.Options[optionname] = optionval
 			} else {
-				return &ErrOptionUnknown{arg}
+				return helpError(commandData, &ErrOptionUnknown{arg})
 			}
 		} else if paramParsing {
 			// parameter parsing
@@ -95,7 +95,7 @@ func (c *Command) Parse() error {
 		} else if commandPtr.handler == nil {
 			// we're in a parent menu, so this cant be a parameter -- but the next argument
 			// is not a valid subcommand.
-			return &ErrCommandInvalid{arg}
+			return helpError(commandData, &ErrCommandInvalid{arg})
 		} else {
 			// we've now reached a child menu, and all that remains are parameters and options
 			commandData.Params = append(commandData.Params, os.Args[i])
@@ -111,20 +111,20 @@ func (c *Command) Parse() error {
 			return nil
 		}
 
-		return &ErrCommandMissing{}
+		return helpError(commandData, &ErrCommandMissing{})
 	}
 
 	if e := commandPtr.runCallbacksPre(commandData); e != nil {
-		return &ErrCallbackPre{e.Error()}
+		return helpError(commandData, &ErrCallbackPre{e.Error()})
 	}
 
 	if commandPtr != cmdHelp {
 		if e := commandPtr.hasRequiredOptions(commandData); e != nil {
-			return &ErrOptionMissing{e.Error()}
+			return helpError(commandData, &ErrOptionMissing{e.Error()})
 		}
 
 		if e := commandPtr.runCallbacks(commandData); e != nil {
-			return &ErrCallback{e.Error()}
+			return helpError(commandData, &ErrCallback{e.Error()})
 		}
 	}
 
