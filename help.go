@@ -3,6 +3,7 @@ package clicommand
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 var (
@@ -35,8 +36,8 @@ func helpOutput(data *Data, stderr bool) {
 	cmd := data.Cmd
 
 	fmt.Fprintf(out, "\n")
-	fmt.Fprintf(out, "%s\n", cmd.GetNameChain())
-	fmt.Fprintf(out, "%s\n", cmd.desc)
+	fmt.Fprintf(out, "%s - %s\n", cmd.name, cmd.desc)
+	fmt.Fprintf(out, "%s\n", helpCommandShort(cmd))
 	fmt.Fprintf(out, "\n")
 
 	helpOptionsRecurseRev(cmd)
@@ -55,6 +56,46 @@ func helpOutput(data *Data, stderr bool) {
 			cmd.GetNameTop(), cmd.GetNameTop(), cmd.GetNameTop())
 		fmt.Fprintf(out, "\n")
 	}
+}
+
+func helpCommandShort(cmd *Command) string {
+	var params []string
+
+	for _, option := range cmd.options {
+		params = append([]string{helpCommandShortOption(option)}, params...)
+	}
+
+	params = append(params, cmd.name)
+
+	if cmd.parent != nil {
+		params = append(params, helpCommandShort(cmd.parent))
+	}
+
+	for i, j := 0, len(params)-1; i < j; i, j = i+1, j-1 {
+		params[i], params[j] = params[j], params[i]
+	}
+
+	return strings.Join(params, " ")
+}
+
+func helpCommandShortOption(option *Option) string {
+	var optstr string
+
+	if !option.required {
+		optstr += "["
+	}
+
+	if option.param {
+		optstr += "--" + option.name + " <" + option.name + ">"
+	} else {
+		optstr += "-" + option.name
+	}
+
+	if !option.required {
+		optstr += "]"
+	}
+
+	return optstr
 }
 
 func helpOptionsRecurseRev(cmd *Command) {
