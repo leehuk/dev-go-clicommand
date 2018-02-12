@@ -59,33 +59,23 @@ parameters, or the 'help' command is used.  The following example uses the sampl
 program from https://git.io/vNDug
 
 ```
-[golang@1394e13b1fac helloworld]$ ./helloworld help
-helloworld
-Sample hello world program
+[golang@908222b2e8aa helloworld]$ ./helloworld help
+
+helloworld - Sample hello world program
+helloworld [-u] [-lower]
+
+helloworld options:
+   -u                    Uppercase output
+   -lower                Lowercase output
 
 Available subcommands:
-    hello        Hello saying options
+  hello        Says hello world
+  say          Says something
 
 For help information run:
   'helloworld help' .. 'helloworld <commands>* help' .. 'helloworld [commands]* help [subcommand]*'
-[golang@1394e13b1fac helloworld]$
-```
 
-```
-[golang@1394e13b1fac helloworld]$ ./helloworld hello say help
-helloworld hello say
-Says something
-
-helloworld hello options:
-    -u                    Uppercase output
-    -lower                Lowercase output
-
-helloworld hello say options:
-    --say <arg>            Required: Thing to say
-
-For help information run:
-  'helloworld help' .. 'helloworld <commands>* help' .. 'helloworld [commands]* help [subcommand]*'
-[golang@1394e13b1fac helloworld]$
+[golang@908222b2e8aa helloworld]$ 
 ```
 
 ## Sample Program
