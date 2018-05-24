@@ -18,21 +18,21 @@ import (
 //      clicommand api get ==> handler
 //      clicommand api delete ==> handler
 type Command struct {
-	// name Name of subcommand
+	// Name Name of subcommand
 	Name string
-	// desc Description of subcommand
+	// Desc Description of subcommand
 	Desc string
-	// handler Handler function subcommand calls, nil for subcommands with children
+	// Handler Handler function subcommand calls, nil for subcommands with children
 	Handler Handler
-	// parent Command object thats the parent of this one
+	// Parent Command object thats the parent of this one
 	Parent *Command
-	// children Command objects that are children of this one
+	// Children Command objects that are children of this one
 	Children []*Command
-	// options Option arguments
+	// Options Option arguments
 	Options []*Option
-	// callbackspre Callbacks to run pre-verification
+	// Callbackspre Callbacks to run pre-verification
 	Callbackspre []Handler
-	// callbacks Callbacks to run as part of verification
+	// Callbacks Callbacks to run as part of verification
 	Callbacks []Handler
 }
 

@@ -50,28 +50,28 @@ func TestNewCommand(t *testing.T) {
 
 	// create our root object, and validate all struct elements are as expected
 	cmdRoot := newCommandRoot(nil)
-	assert.Equal(cmdRootName, cmdRoot.name, "command.Name error")
-	assert.Equal(cmdRootDesc, cmdRoot.desc, "command.Desc error")
-	assert.Nil(cmdRoot.handler)
-	assert.Nil(cmdRoot.parent)
-	assert.Empty(cmdRoot.children)
-	assert.Empty(cmdRoot.options)
-	assert.Empty(cmdRoot.callbackspre)
-	assert.Empty(cmdRoot.callbacks)
+	assert.Equal(cmdRootName, cmdRoot.Name, "command.Name error")
+	assert.Equal(cmdRootDesc, cmdRoot.Desc, "command.Desc error")
+	assert.Nil(cmdRoot.Handler)
+	assert.Nil(cmdRoot.Parent)
+	assert.Empty(cmdRoot.Children)
+	assert.Empty(cmdRoot.Options)
+	assert.Empty(cmdRoot.Callbackspre)
+	assert.Empty(cmdRoot.Callbacks)
 
 	// create a nested object and verify it
 	cmdChild := cmdRoot.newCommandChild(nil)
 
-	if assert.NotNil(cmdChild.parent) {
-		assert.Equal(cmdRootName, cmdChild.parent.name, "Command.parent.name error")
+	if assert.NotNil(cmdChild.Parent) {
+		assert.Equal(cmdRootName, cmdChild.Parent.Name, "Command.parent.name error")
 	}
 
-	if assert.Len(cmdRoot.children, 1) {
-		assert.Equal(cmdChildName, cmdRoot.children[0].name, "Command.children[0].name")
+	if assert.Len(cmdRoot.Children, 1) {
+		assert.Equal(cmdChildName, cmdRoot.Children[0].Name, "Command.children[0].name")
 	}
 
 	cmdHandler := newCommandRoot(testHandlerFunc)
-	assert.NotNil(cmdHandler.handler)
+	assert.NotNil(cmdHandler.Handler)
 }
 
 // BindCommand testing, create parent/child objects and bind them
@@ -82,12 +82,12 @@ func TestBindCommand(t *testing.T) {
 	cmdChild := newCommandChild(nil)
 	cmdRoot.BindCommand(cmdChild)
 
-	if assert.NotNil(cmdChild.parent) {
-		assert.Equal(cmdRootName, cmdChild.parent.name)
+	if assert.NotNil(cmdChild.Parent) {
+		assert.Equal(cmdRootName, cmdChild.Parent.Name)
 	}
 
-	if assert.Len(cmdRoot.children, 1) {
-		assert.Equal(cmdChildName, cmdRoot.children[0].name)
+	if assert.Len(cmdRoot.Children, 1) {
+		assert.Equal(cmdChildName, cmdRoot.Children[0].Name)
 	}
 }
 
@@ -102,7 +102,7 @@ func TestGetCommand(t *testing.T) {
 	cmdChild := cmdRoot.GetCommand(cmdChildName)
 
 	if assert.NotNil(cmdChild) {
-		assert.Equal(cmdChildName, cmdChild.name)
+		assert.Equal(cmdChildName, cmdChild.Name)
 	}
 }
 
@@ -114,7 +114,7 @@ func TestNewOption(t *testing.T) {
 	option := cmd.newOption()
 
 	if assert.Len(option.parents, 1) {
-		assert.Len(cmd.options, 1)
+		assert.Len(cmd.Options, 1)
 	}
 }
 
@@ -127,7 +127,7 @@ func TestBindOption(t *testing.T) {
 	cmd.BindOption(option)
 
 	assert.Len(option.parents, 1)
-	assert.Len(cmd.options, 1)
+	assert.Len(cmd.Options, 1)
 }
 
 // UnbindOption, validate we bind and then unbind
@@ -141,7 +141,7 @@ func TestUnbindOption(t *testing.T) {
 	if assert.Len(option.parents, 1) {
 		cmd.UnbindOption(option)
 		assert.Empty(option.parents)
-		assert.Empty(cmd.options)
+		assert.Empty(cmd.Options)
 	}
 
 }
@@ -169,7 +169,7 @@ func TestBindCallbackPre(t *testing.T) {
 	cmd := newCommandRoot(nil)
 	cmd.BindCallbackPre(testHandlerFunc)
 
-	assert.Len(cmd.callbackspre, 1)
+	assert.Len(cmd.Callbackspre, 1)
 }
 
 // BindCallback, create simple callback and validate its added
@@ -179,7 +179,7 @@ func TestBindCallback(t *testing.T) {
 	cmd := newCommandRoot(nil)
 	cmd.BindCallback(testHandlerFunc)
 
-	assert.Len(cmd.callbacks, 1)
+	assert.Len(cmd.Callbacks, 1)
 }
 
 // TestGetNameChain, create parent/child commands, and validate name
