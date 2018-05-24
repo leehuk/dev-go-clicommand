@@ -113,7 +113,7 @@ func (c *Command) UnbindOption(optionv ...*Option) {
 // searching the entire way up the tree to the root if necessary.
 func (c *Command) GetOption(name string, param bool) *Option {
 	for _, option := range c.Options {
-		if strings.EqualFold(option.name, name) && option.param == param {
+		if strings.EqualFold(option.Name, name) && option.Param == param {
 			return option
 		}
 	}
@@ -131,8 +131,8 @@ func (c *Command) GetOption(name string, param bool) *Option {
 // moves up towards the root.
 func (c *Command) hasRequiredOptions(data *Data) error {
 	for _, option := range c.Options {
-		if _, ok := data.Options[option.name]; option.required && !ok {
-			return fmt.Errorf("Required option missing: %s", option.name)
+		if _, ok := data.Options[option.Name]; option.Required && !ok {
+			return fmt.Errorf("Required option missing: %s", option.Name)
 
 		}
 	}

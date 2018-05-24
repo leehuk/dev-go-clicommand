@@ -113,7 +113,7 @@ func TestNewOption(t *testing.T) {
 	cmd := newCommandRoot(nil)
 	option := cmd.newOption()
 
-	if assert.Len(option.parents, 1) {
+	if assert.Len(option.Parents, 1) {
 		assert.Len(cmd.Options, 1)
 	}
 }
@@ -126,7 +126,7 @@ func TestBindOption(t *testing.T) {
 	option := newOption()
 	cmd.BindOption(option)
 
-	assert.Len(option.parents, 1)
+	assert.Len(option.Parents, 1)
 	assert.Len(cmd.Options, 1)
 }
 
@@ -138,9 +138,9 @@ func TestUnbindOption(t *testing.T) {
 	option := cmd.newOption()
 
 	// first verify its bound
-	if assert.Len(option.parents, 1) {
+	if assert.Len(option.Parents, 1) {
 		cmd.UnbindOption(option)
-		assert.Empty(option.parents)
+		assert.Empty(option.Parents)
 		assert.Empty(cmd.Options)
 	}
 

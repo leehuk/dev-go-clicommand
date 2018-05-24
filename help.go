@@ -81,17 +81,17 @@ func helpCommandShort(cmd *Command) string {
 func helpCommandShortOption(option *Option) string {
 	var optstr string
 
-	if !option.required {
+	if !option.Required {
 		optstr += "["
 	}
 
-	if option.param {
-		optstr += "--" + option.name + " <" + option.name + ">"
+	if option.Param {
+		optstr += "--" + option.Name + " <" + option.Name + ">"
 	} else {
-		optstr += "-" + option.name
+		optstr += "-" + option.Name
 	}
 
-	if !option.required {
+	if !option.Required {
 		optstr += "]"
 	}
 
@@ -117,18 +117,18 @@ func helpOptions(cmd *Command) {
 		var optsuffix string
 		var descprefix string
 
-		if option.param {
+		if option.Param {
 			opttype += "--"
 			optsuffix += " <arg>"
 		} else {
 			opttype += "-"
 		}
 
-		if option.required {
+		if option.Required {
 			descprefix += "Required: "
 		}
 
-		fmt.Printf("  %2s%-20s %s\n", opttype, option.name+optsuffix, descprefix+option.desc)
+		fmt.Printf("  %2s%-20s %s\n", opttype, option.Name+optsuffix, descprefix+option.Desc)
 	}
 
 	fmt.Printf("\n")

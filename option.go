@@ -16,10 +16,10 @@ package clicommand
 // the parser will treat it as an unknown option.
 type Option struct {
 	// name Name of option, stored without its dashes prefix.
-	name string
+	Name string
 
 	// desc Description of option
-	desc string
+	Desc string
 
 	// param Controls whether this option takes parameters or not.
 	//
@@ -28,15 +28,15 @@ type Option struct {
 	// E.g.
 	//   --option1 <required parameter>
 	//   -option2 // no paramater
-	param bool
+	Param bool
 
 	// required Controls whether this option must be supplied or not.
 	// If a parameter is marked as required, the parser will automatically
 	// detect it is not supplied and return an error.
-	required bool
+	Required bool
 
 	// parents Array of pointers which this Option is bound to
-	parents []*Command
+	Parents []*Command
 }
 
 // NewOption creates a new Option object with the given name and desc, but does
@@ -47,9 +47,9 @@ type Option struct {
 // additional parameter after it.
 func NewOption(name string, desc string, param bool) *Option {
 	opt := &Option{
-		name:  name,
-		desc:  desc,
-		param: param,
+		Name:  name,
+		Desc:  desc,
+		Param: param,
 	}
 
 	return opt
@@ -58,7 +58,7 @@ func NewOption(name string, desc string, param bool) *Option {
 // BindCommand binds an Option to the given Command object, so it is
 // available to be specified for that command, and all child commands.
 func (o *Option) BindCommand(cmd *Command) {
-	o.parents = append(o.parents, cmd)
+	o.Parents = append(o.Parents, cmd)
 	cmd.Options = append(cmd.Options, o)
 }
 
@@ -68,7 +68,7 @@ func (o *Option) UnbindCommand(cmd *Command) {
 	var newparents []*Command
 	var newoptions []*Option
 
-	for _, cmdi := range o.parents {
+	for _, cmdi := range o.Parents {
 		if cmdi != cmd {
 			newparents = append(newparents, cmdi)
 		}
@@ -80,7 +80,7 @@ func (o *Option) UnbindCommand(cmd *Command) {
 		}
 	}
 
-	o.parents = newparents
+	o.Parents = newparents
 	cmd.Options = newoptions
 }
 
@@ -88,18 +88,18 @@ func (o *Option) UnbindCommand(cmd *Command) {
 // only applies to Options that are directly on the path between the edge Command
 // and the root.
 func (o *Option) GetRequired() bool {
-	return o.required
+	return o.Required
 }
 
 // SetRequired marks the Option so it must be specified.  This requirement only
 // applies to Options that are directly on the path between the edge Command
 // and the root.
 func (o *Option) SetRequired() *Option {
-	o.required = true
+	o.Required = true
 	return o
 }
 
 // GetParents returns the parents Command objects of an Option
 func (o *Option) GetParents() []*Command {
-	return o.parents
+	return o.Parents
 }
