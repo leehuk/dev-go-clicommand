@@ -19,21 +19,21 @@ import (
 //      clicommand api delete ==> handler
 type Command struct {
 	// name Name of subcommand
-	name string
+	Name string
 	// desc Description of subcommand
-	desc string
+	Desc string
 	// handler Handler function subcommand calls, nil for subcommands with children
-	handler Handler
+	Handler Handler
 	// parent Command object thats the parent of this one
-	parent *Command
+	Parent *Command
 	// children Command objects that are children of this one
-	children []*Command
+	Children []*Command
 	// options Option arguments
-	options []*Option
+	Options []*Option
 	// callbackspre Callbacks to run pre-verification
-	callbackspre []Handler
+	Callbackspre []Handler
 	// callbacks Callbacks to run as part of verification
-	callbacks []Handler
+	Callbacks []Handler
 }
 
 // NewCommand creates a new command, unbound to parents.  This is generally only used
@@ -43,9 +43,9 @@ type Command struct {
 // handler must be nil if this command will have its own children.
 func NewCommand(name string, desc string, handler Handler) *Command {
 	cmd := &Command{
-		name:    name,
-		desc:    desc,
-		handler: handler,
+		Name:    name,
+		Desc:    desc,
+		Handler: handler,
 	}
 
 	return cmd
@@ -66,21 +66,21 @@ func (c *Command) NewCommand(name string, desc string, handler Handler) *Command
 //
 // If the parent already has a handler set, this will panic.
 func (c *Command) BindCommand(cmdv ...*Command) {
-	if c.handler != nil {
+	if c.Handler != nil {
 		panic(fmt.Sprintf("BindCommand() Parent has handler function set: %s", c.GetNameChain()))
 	}
 
-	c.children = append(c.children, cmdv...)
+	c.Children = append(c.Children, cmdv...)
 	for _, cmd := range cmdv {
-		cmd.parent = c
+		cmd.Parent = c
 	}
 }
 
 // GetCommand finds a child Command with the given name, or nil if not found.
 // name matches are case-insensitive.
 func (c *Command) GetCommand(name string) *Command {
-	for _, cmd := range c.children {
-		if strings.EqualFold(cmd.name, name) {
+	for _, cmd := range c.Children {
+		if strings.EqualFold(cmd.Name, name) {
 			return cmd
 		}
 	}
@@ -112,15 +112,15 @@ func (c *Command) UnbindOption(optionv ...*Option) {
 // GetOption finds an child Option with the given name and the same parameter,
 // searching the entire way up the tree to the root if necessary.
 func (c *Command) GetOption(name string, param bool) *Option {
-	for _, option := range c.options {
+	for _, option := range c.Options {
 		if strings.EqualFold(option.name, name) && option.param == param {
 			return option
 		}
 	}
 
 	// not found, may be a parameter to a parent menu
-	if c.parent != nil {
-		return c.parent.GetOption(name, param)
+	if c.Parent != nil {
+		return c.Parent.GetOption(name, param)
 	}
 
 	return nil
@@ -130,15 +130,15 @@ func (c *Command) GetOption(name string, param bool) *Option {
 // any marked as being required, are appropriately set.  It starts at the leaf and
 // moves up towards the root.
 func (c *Command) hasRequiredOptions(data *Data) error {
-	for _, option := range c.options {
+	for _, option := range c.Options {
 		if _, ok := data.Options[option.name]; option.required && !ok {
 			return fmt.Errorf("Required option missing: %s", option.name)
 
 		}
 	}
 
-	if c.parent != nil {
-		return c.parent.hasRequiredOptions(data)
+	if c.Parent != nil {
+		return c.Parent.hasRequiredOptions(data)
 	}
 
 	return nil
@@ -152,7 +152,7 @@ func (c *Command) hasRequiredOptions(data *Data) error {
 // Callbacks are processed starting at the leaf, moving up to the root. Only
 // callbacks directly on that path are executed.
 func (c *Command) BindCallbackPre(handler Handler) {
-	c.callbackspre = append(c.callbackspre, handler)
+	c.Callbackspre = append(c.Callbackspre, handler)
 }
 
 // BindCallback binds a validation callback, that can be used to add extra
@@ -161,20 +161,20 @@ func (c *Command) BindCallbackPre(handler Handler) {
 // Callbacks are processed starting at the leaf, moving up to the root.  Only
 // callbacks directly along that path are executed.
 func (c *Command) BindCallback(handler Handler) {
-	c.callbacks = append(c.callbacks, handler)
+	c.Callbacks = append(c.Callbacks, handler)
 }
 
 // runCallbacksPre runs all pre-validation callbacks, starting at the leaf
 // and moving up to the root.
 func (c *Command) runCallbacksPre(data *Data) error {
-	for _, handler := range c.callbackspre {
+	for _, handler := range c.Callbackspre {
 		if error := handler(data); error != nil {
 			return error
 		}
 	}
 
-	if c.parent != nil {
-		return c.parent.runCallbacksPre(data)
+	if c.Parent != nil {
+		return c.Parent.runCallbacksPre(data)
 	}
 
 	return nil
@@ -183,14 +183,14 @@ func (c *Command) runCallbacksPre(data *Data) error {
 // runCallbacks runs all validation callbacks, starting at the leaf and moving
 // up to the root.
 func (c *Command) runCallbacks(data *Data) error {
-	for _, handler := range c.callbacks {
+	for _, handler := range c.Callbacks {
 		if error := handler(data); error != nil {
 			return error
 		}
 	}
 
-	if c.parent != nil {
-		return c.parent.runCallbacks(data)
+	if c.Parent != nil {
+		return c.Parent.runCallbacks(data)
 	}
 
 	return nil
@@ -199,9 +199,9 @@ func (c *Command) runCallbacks(data *Data) error {
 // GetNameChain builds a space separated string of all Command names from itself
 // up to the root.
 func (c *Command) GetNameChain() string {
-	name := c.name
-	if c.parent != nil {
-		parentname := c.parent.GetNameChain()
+	name := c.Name
+	if c.Parent != nil {
+		parentname := c.Parent.GetNameChain()
 		if parentname != "" {
 			name = parentname + " " + name
 		}
@@ -211,9 +211,9 @@ func (c *Command) GetNameChain() string {
 
 // GetNameTop finds the name of the root Command.
 func (c *Command) GetNameTop() string {
-	if c.parent != nil {
-		return c.parent.GetNameTop()
+	if c.Parent != nil {
+		return c.Parent.GetNameTop()
 	}
 
-	return c.name
+	return c.Name
 }

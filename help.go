@@ -8,7 +8,7 @@ import (
 
 var (
 	cmdHelp = &Command{
-		handler: helpUsage,
+		Handler: helpUsage,
 	}
 )
 
@@ -36,21 +36,21 @@ func helpOutput(data *Data, stderr bool) {
 	cmd := data.Cmd
 
 	fmt.Fprintf(out, "\n")
-	fmt.Fprintf(out, "%s - %s\n", cmd.name, cmd.desc)
+	fmt.Fprintf(out, "%s - %s\n", cmd.Name, cmd.Desc)
 	fmt.Fprintf(out, "%s\n", helpCommandShort(cmd))
 	fmt.Fprintf(out, "\n")
 
 	helpOptionsRecurseRev(cmd)
 
-	if len(cmd.children) > 0 {
+	if len(cmd.Children) > 0 {
 		fmt.Fprintf(out, "Available subcommands:\n")
-		for _, v := range cmd.children {
-			fmt.Fprintf(out, "  %-12s %s\n", v.name, v.desc)
+		for _, v := range cmd.Children {
+			fmt.Fprintf(out, "  %-12s %s\n", v.Name, v.Desc)
 		}
 		fmt.Fprintf(out, "\n")
 	}
 
-	if cmd.handler == nil {
+	if cmd.Handler == nil {
 		fmt.Fprintf(out, "For help information run:\n")
 		fmt.Fprintf(out, "  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n",
 			cmd.GetNameTop(), cmd.GetNameTop(), cmd.GetNameTop())
@@ -61,14 +61,14 @@ func helpOutput(data *Data, stderr bool) {
 func helpCommandShort(cmd *Command) string {
 	var params []string
 
-	for _, option := range cmd.options {
+	for _, option := range cmd.Options {
 		params = append([]string{helpCommandShortOption(option)}, params...)
 	}
 
-	params = append(params, cmd.name)
+	params = append(params, cmd.Name)
 
-	if cmd.parent != nil {
-		params = append(params, helpCommandShort(cmd.parent))
+	if cmd.Parent != nil {
+		params = append(params, helpCommandShort(cmd.Parent))
 	}
 
 	for i, j := 0, len(params)-1; i < j; i, j = i+1, j-1 {
@@ -99,20 +99,20 @@ func helpCommandShortOption(option *Option) string {
 }
 
 func helpOptionsRecurseRev(cmd *Command) {
-	if cmd.parent != nil {
-		helpOptionsRecurseRev(cmd.parent)
+	if cmd.Parent != nil {
+		helpOptionsRecurseRev(cmd.Parent)
 	}
 
 	helpOptions(cmd)
 }
 
 func helpOptions(cmd *Command) {
-	if len(cmd.options) == 0 {
+	if len(cmd.Options) == 0 {
 		return
 	}
 
 	fmt.Printf("%s options:\n", cmd.GetNameChain())
-	for _, option := range cmd.options {
+	for _, option := range cmd.Options {
 		var opttype string
 		var optsuffix string
 		var descprefix string

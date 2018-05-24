@@ -59,7 +59,7 @@ func NewOption(name string, desc string, param bool) *Option {
 // available to be specified for that command, and all child commands.
 func (o *Option) BindCommand(cmd *Command) {
 	o.parents = append(o.parents, cmd)
-	cmd.options = append(cmd.options, o)
+	cmd.Options = append(cmd.Options, o)
 }
 
 // UnbindCommand unbinds an Option from the given Command object, at which
@@ -74,14 +74,14 @@ func (o *Option) UnbindCommand(cmd *Command) {
 		}
 	}
 
-	for _, opt := range cmd.options {
+	for _, opt := range cmd.Options {
 		if opt != o {
 			newoptions = append(newoptions, opt)
 		}
 	}
 
 	o.parents = newparents
-	cmd.options = newoptions
+	cmd.Options = newoptions
 }
 
 // GetRequired returns whether this Option must be specified.  This requirement

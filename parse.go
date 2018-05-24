@@ -91,9 +91,9 @@ func (c *Command) Parse() error {
 			// we now want to call out to help on a dummy command object, but preserving
 			// Cmd as our current position down the menu structure
 			commandData.Cmd = commandPtr
-			cmdHelp.parent = commandPtr
+			cmdHelp.Parent = commandPtr
 			commandPtr = cmdHelp
-		} else if commandPtr.handler == nil {
+		} else if commandPtr.Handler == nil {
 			// we're in a parent menu, so this cant be a parameter -- but the next argument
 			// is not a valid subcommand.
 			return helpError(commandData, &ErrCommandInvalid{arg})
@@ -105,7 +105,7 @@ func (c *Command) Parse() error {
 	}
 
 	// no subcommand specified
-	if commandPtr.handler == nil {
+	if commandPtr.Handler == nil {
 		// dont error if we're at the root level
 		if commandPtr == c {
 			helpUsage(commandData)
@@ -129,7 +129,7 @@ func (c *Command) Parse() error {
 		}
 	}
 
-	if e := commandPtr.handler(commandData); e != nil {
+	if e := commandPtr.Handler(commandData); e != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", e)
 		return &ErrCommandError{e.Error()}
 	}
