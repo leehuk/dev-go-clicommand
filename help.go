@@ -52,8 +52,8 @@ func helpOutput(data *Data, stderr bool) {
 
 	if cmd.Handler == nil {
 		fmt.Fprintf(out, "For help information run:\n")
-		fmt.Fprintf(out, "  '%s help' .. '%s <commands>* help' .. '%s [commands]* help [subcommand]*'\n",
-			cmd.GetNameTop(), cmd.GetNameTop(), cmd.GetNameTop())
+		fmt.Fprintf(out, "  '%s help' .. '%s <commands>* help'\n",
+			cmd.GetNameTop(), cmd.GetNameTop())
 		fmt.Fprintf(out, "\n")
 	}
 }
